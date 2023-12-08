@@ -1,4 +1,4 @@
-
+%% BusActors
 BusActors = Simulink.Bus;
 BusActors.Description = '';
 BusActors.DataScope = 'Auto';
@@ -40,6 +40,7 @@ saveVarsTmp{1}(3, 1).Description = '';
 BusActors.Elements = saveVarsTmp{1};
 clear saveVarsTmp;
 
+%% BusActorsActors
 BusActorsActors = Simulink.Bus;
 BusActorsActors.Description = '';
 BusActorsActors.DataScope = 'Auto';
