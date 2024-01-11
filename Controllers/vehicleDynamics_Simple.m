@@ -1,4 +1,4 @@
-function stateDot = vehicleDynamics(state, input)
+function stateDot = vehicleDynamics_Simple(state, input)
     % Unpack the state and input
     x = state(1);
     y = state(2);

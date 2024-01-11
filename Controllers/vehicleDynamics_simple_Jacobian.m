@@ -1,4 +1,4 @@
-function J = vehicleDynamicsJacobian(state, input)
+function J = vehicleDynamics_simple_Jacobian(state, input)
     vx = state(3);
     steering_angle = input(1);
 
