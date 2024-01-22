@@ -25,7 +25,12 @@ classdef Vehicle_Params
 
         Sensors = NaN; % Onboard sensors object
 
-        state=zeros(6,1); % Current state [x,y,vx,vy,yaw,yawRate]'
+        Position=zeros(3,1); % Current state 
+        Velocity=zeros(3,1);
+        Acceleration=zeros(3,1);
+        Orientation=zeros(3,1);
+        AngularVelocity=zeros(3,1);
+        AngularAcceleration=zeros(3,1);
     end
 
     methods
@@ -33,20 +38,20 @@ classdef Vehicle_Params
             obj.ID = ID;
         end
 
-        function obj = Set_iniStateFromScenario(obj, data)
+        function obj = Set_iniStateFromScenario(obj, Scenario)
             % Extract initial state from scenario
-            for i=1:length(data.EgoCarId)
+            for i=1:length(Scenario.EgoCarId)
                 % find this car's ID
-                if obj.ID == data.EgoCarId(i)
+                if obj.ID == Scenario.EgoCarId(i)
                     % Extract initial state from scenario
-                    position0=data.ActorSpecifications.Position(i,1:2);
-                    velocity0=[0 0];
-                    yaw0=data.ActorSpecifications.Yaw(i);
-                    yawRate0=0;
 
-                    % assign state
-                    obj.state=[position0 velocity0 yaw0 yawRate0];
-
+                    obj.Position=Scenario.ActorSpecifications(i).Position;
+                    
+                    Roll=Scenario.ActorSpecifications(i).Roll;
+                    Pitch=Scenario.ActorSpecifications(i).Pitch;
+                    Yaw=Scenario.ActorSpecifications(i).Yaw;
+                    obj.Orientation=deg2rad([Roll Pitch Yaw]);
+                    
                     break
                 end
             end

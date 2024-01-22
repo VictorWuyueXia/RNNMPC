@@ -1,51 +1,149 @@
-%% BusActors
-BusActors = Simulink.Bus;
-BusActors.Description = '';
-BusActors.DataScope = 'Auto';
-BusActors.HeaderFile = '';
-BusActors.Alignment = -1;
-saveVarsTmp{1} = Simulink.BusElement;
-saveVarsTmp{1}.Name = 'NumActors';
-saveVarsTmp{1}.Complexity = 'real';
-saveVarsTmp{1}.Dimensions = [1 1];
-saveVarsTmp{1}.DataType = 'double';
-saveVarsTmp{1}.Min = [];
-saveVarsTmp{1}.Max = [];
-saveVarsTmp{1}.DimensionsMode = 'Fixed';
-saveVarsTmp{1}.SamplingMode = 'Sample based';
-saveVarsTmp{1}.DocUnits = '';
-saveVarsTmp{1}.Description = '';
-saveVarsTmp{1}(2, 1) = Simulink.BusElement;
-saveVarsTmp{1}(2, 1).Name = 'Time';
-saveVarsTmp{1}(2, 1).Complexity = 'real';
-saveVarsTmp{1}(2, 1).Dimensions = [1 1];
-saveVarsTmp{1}(2, 1).DataType = 'double';
-saveVarsTmp{1}(2, 1).Min = [];
-saveVarsTmp{1}(2, 1).Max = [];
-saveVarsTmp{1}(2, 1).DimensionsMode = 'Fixed';
-saveVarsTmp{1}(2, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(2, 1).DocUnits = '';
-saveVarsTmp{1}(2, 1).Description = '';
-saveVarsTmp{1}(3, 1) = Simulink.BusElement;
-saveVarsTmp{1}(3, 1).Name = 'Actors';
-saveVarsTmp{1}(3, 1).Complexity = 'real';
-saveVarsTmp{1}(3, 1).Dimensions = [1 1];
-saveVarsTmp{1}(3, 1).DataType = 'Bus: busActorsActors';
-saveVarsTmp{1}(3, 1).Min = [];
-saveVarsTmp{1}(3, 1).Max = [];
-saveVarsTmp{1}(3, 1).DimensionsMode = 'Fixed';
-saveVarsTmp{1}(3, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(3, 1).DocUnits = '';
-saveVarsTmp{1}(3, 1).Description = '';
-BusActors.Elements = saveVarsTmp{1};
-clear saveVarsTmp;
+% %% BusActors
+% BusActors = Simulink.Bus;
+% BusActors.Description = '';
+% BusActors.DataScope = 'Auto';
+% BusActors.HeaderFile = '';
+% BusActors.Alignment = -1;
+% 
+% saveVarsTmp{1} = Simulink.BusElement;
+% saveVarsTmp{1}.Name = 'NumActors';
+% saveVarsTmp{1}.Complexity = 'real';
+% saveVarsTmp{1}.Dimensions = [1 1];
+% saveVarsTmp{1}.DataType = 'double';
+% saveVarsTmp{1}.Min = [];
+% saveVarsTmp{1}.Max = [];
+% saveVarsTmp{1}.DimensionsMode = 'Fixed';
+% saveVarsTmp{1}.SamplingMode = 'Sample based';
+% saveVarsTmp{1}.DocUnits = '';
+% saveVarsTmp{1}.Description = '';
+% 
+% saveVarsTmp{1}(2, 1) = Simulink.BusElement;
+% saveVarsTmp{1}(2, 1).Name = 'Time';
+% saveVarsTmp{1}(2, 1).Complexity = 'real';
+% saveVarsTmp{1}(2, 1).Dimensions = [1 1];
+% saveVarsTmp{1}(2, 1).DataType = 'double';
+% saveVarsTmp{1}(2, 1).Min = [];
+% saveVarsTmp{1}(2, 1).Max = [];
+% saveVarsTmp{1}(2, 1).DimensionsMode = 'Fixed';
+% saveVarsTmp{1}(2, 1).SamplingMode = 'Sample based';
+% saveVarsTmp{1}(2, 1).DocUnits = '';
+% saveVarsTmp{1}(2, 1).Description = '';
+% 
+% saveVarsTmp{1}(3, 1) = Simulink.BusElement;
+% saveVarsTmp{1}(3, 1).Name = 'Actors';
+% saveVarsTmp{1}(3, 1).Complexity = 'real';
+% saveVarsTmp{1}(3, 1).Dimensions = [1 1];
+% saveVarsTmp{1}(3, 1).DataType = 'Bus: busActorsActors';
+% saveVarsTmp{1}(3, 1).Min = [];
+% saveVarsTmp{1}(3, 1).Max = [];
+% saveVarsTmp{1}(3, 1).DimensionsMode = 'Fixed';
+% saveVarsTmp{1}(3, 1).SamplingMode = 'Sample based';
+% saveVarsTmp{1}(3, 1).DocUnits = '';
+% saveVarsTmp{1}(3, 1).Description = '';
+% BusActors.Elements = saveVarsTmp{1};
+% clear saveVarsTmp;
+% 
+% %% BusActorsActors
+% BusActorsActors = Simulink.Bus;
+% BusActorsActors.Description = '';
+% BusActorsActors.DataScope = 'Auto';
+% BusActorsActors.HeaderFile = '';
+% BusActorsActors.Alignment = -1;
+% 
+% saveVarsTmp{1} = Simulink.BusElement;
+% saveVarsTmp{1}.Name = 'ActorID';
+% saveVarsTmp{1}.Complexity = 'real';
+% saveVarsTmp{1}.Dimensions = [1 1];
+% saveVarsTmp{1}.DataType = 'double';
+% saveVarsTmp{1}.Min = [];
+% saveVarsTmp{1}.Max = [];
+% saveVarsTmp{1}.DimensionsMode = 'Fixed';
+% saveVarsTmp{1}.SamplingMode = 'Sample based';
+% saveVarsTmp{1}.DocUnits = '';
+% saveVarsTmp{1}.Description = '';
+% 
+% saveVarsTmp{1}(2, 1) = Simulink.BusElement;
+% saveVarsTmp{1}(2, 1).Name = 'Position';
+% saveVarsTmp{1}(2, 1).Complexity = 'real';
+% saveVarsTmp{1}(2, 1).Dimensions = [1 3];
+% saveVarsTmp{1}(2, 1).DataType = 'double';
+% saveVarsTmp{1}(2, 1).Min = [];
+% saveVarsTmp{1}(2, 1).Max = [];
+% saveVarsTmp{1}(2, 1).DimensionsMode = 'Fixed';
+% saveVarsTmp{1}(2, 1).SamplingMode = 'Sample based';
+% saveVarsTmp{1}(2, 1).DocUnits = '';
+% saveVarsTmp{1}(2, 1).Description = '';
+% 
+% saveVarsTmp{1}(3, 1) = Simulink.BusElement;
+% saveVarsTmp{1}(3, 1).Name = 'Velocity';
+% saveVarsTmp{1}(3, 1).Complexity = 'real';
+% saveVarsTmp{1}(3, 1).Dimensions = [1 3];
+% saveVarsTmp{1}(3, 1).DataType = 'double';
+% saveVarsTmp{1}(3, 1).Min = [];
+% saveVarsTmp{1}(3, 1).Max = [];
+% saveVarsTmp{1}(3, 1).DimensionsMode = 'Fixed';
+% saveVarsTmp{1}(3, 1).SamplingMode = 'Sample based';
+% saveVarsTmp{1}(3, 1).DocUnits = '';
+% saveVarsTmp{1}(3, 1).Description = '';
+% 
+% saveVarsTmp{1}(4, 1) = Simulink.BusElement;
+% saveVarsTmp{1}(4, 1).Name = 'Roll';
+% saveVarsTmp{1}(4, 1).Complexity = 'real';
+% saveVarsTmp{1}(4, 1).Dimensions = [1 1];
+% saveVarsTmp{1}(4, 1).DataType = 'double';
+% saveVarsTmp{1}(4, 1).Min = [];
+% saveVarsTmp{1}(4, 1).Max = [];
+% saveVarsTmp{1}(4, 1).DimensionsMode = 'Fixed';
+% saveVarsTmp{1}(4, 1).SamplingMode = 'Sample based';
+% saveVarsTmp{1}(4, 1).DocUnits = '';
+% saveVarsTmp{1}(4, 1).Description = '';
+% 
+% saveVarsTmp{1}(5, 1) = Simulink.BusElement;
+% saveVarsTmp{1}(5, 1).Name = 'Pitch';
+% saveVarsTmp{1}(5, 1).Complexity = 'real';
+% saveVarsTmp{1}(5, 1).Dimensions = [1 1];
+% saveVarsTmp{1}(5, 1).DataType = 'double';
+% saveVarsTmp{1}(5, 1).Min = [];
+% saveVarsTmp{1}(5, 1).Max = [];
+% saveVarsTmp{1}(5, 1).DimensionsMode = 'Fixed';
+% saveVarsTmp{1}(5, 1).SamplingMode = 'Sample based';
+% saveVarsTmp{1}(5, 1).DocUnits = '';
+% saveVarsTmp{1}(5, 1).Description = '';
+% 
+% saveVarsTmp{1}(7, 1) = Simulink.BusElement;
+% saveVarsTmp{1}(7, 1).Name = 'Yaw';
+% saveVarsTmp{1}(7, 1).Complexity = 'real';
+% saveVarsTmp{1}(7, 1).Dimensions = [1 1];
+% saveVarsTmp{1}(7, 1).DataType = 'double';
+% saveVarsTmp{1}(7, 1).Min = [];
+% saveVarsTmp{1}(7, 1).Max = [];
+% saveVarsTmp{1}(7, 1).DimensionsMode = 'Fixed';
+% saveVarsTmp{1}(7, 1).SamplingMode = 'Sample based';
+% saveVarsTmp{1}(7, 1).DocUnits = '';
+% saveVarsTmp{1}(7, 1).Description = '';
+% 
+% saveVarsTmp{1}(7, 1) = Simulink.BusElement;
+% saveVarsTmp{1}(7, 1).Name = 'AngularVelocity';
+% saveVarsTmp{1}(7, 1).Complexity = 'real';
+% saveVarsTmp{1}(7, 1).Dimensions = [1 3];
+% saveVarsTmp{1}(7, 1).DataType = 'double';
+% saveVarsTmp{1}(7, 1).Min = [];
+% saveVarsTmp{1}(7, 1).Max = [];
+% saveVarsTmp{1}(7, 1).DimensionsMode = 'Fixed';
+% saveVarsTmp{1}(7, 1).SamplingMode = 'Sample based';
+% saveVarsTmp{1}(7, 1).DocUnits = '';
+% saveVarsTmp{1}(7, 1).Description = '';
+% 
+% BusActorsActors.Elements = saveVarsTmp{1};
+% clear saveVarsTmp;
 
-%% BusActorsActors
-BusActorsActors = Simulink.Bus;
-BusActorsActors.Description = '';
-BusActorsActors.DataScope = 'Auto';
-BusActorsActors.HeaderFile = '';
-BusActorsActors.Alignment = -1;
+%% Ego Vehicle State
+BusEgoVehicleState = Simulink.Bus;
+BusEgoVehicleState.Description = '';
+BusEgoVehicleState.DataScope = 'Auto';
+BusEgoVehicleState.HeaderFile = '';
+BusEgoVehicleState.Alignment = -1;
+
 saveVarsTmp{1} = Simulink.BusElement;
 saveVarsTmp{1}.Name = 'ActorID';
 saveVarsTmp{1}.Complexity = 'real';
@@ -57,6 +155,7 @@ saveVarsTmp{1}.DimensionsMode = 'Fixed';
 saveVarsTmp{1}.SamplingMode = 'Sample based';
 saveVarsTmp{1}.DocUnits = '';
 saveVarsTmp{1}.Description = '';
+
 saveVarsTmp{1}(2, 1) = Simulink.BusElement;
 saveVarsTmp{1}(2, 1).Name = 'Position';
 saveVarsTmp{1}(2, 1).Complexity = 'real';
@@ -66,8 +165,9 @@ saveVarsTmp{1}(2, 1).Min = [];
 saveVarsTmp{1}(2, 1).Max = [];
 saveVarsTmp{1}(2, 1).DimensionsMode = 'Fixed';
 saveVarsTmp{1}(2, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(2, 1).DocUnits = '';
+saveVarsTmp{1}(2, 1).DocUnits = 'm';
 saveVarsTmp{1}(2, 1).Description = '';
+
 saveVarsTmp{1}(3, 1) = Simulink.BusElement;
 saveVarsTmp{1}(3, 1).Name = 'Velocity';
 saveVarsTmp{1}(3, 1).Complexity = 'real';
@@ -77,8 +177,103 @@ saveVarsTmp{1}(3, 1).Min = [];
 saveVarsTmp{1}(3, 1).Max = [];
 saveVarsTmp{1}(3, 1).DimensionsMode = 'Fixed';
 saveVarsTmp{1}(3, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(3, 1).DocUnits = '';
+saveVarsTmp{1}(3, 1).DocUnits = 'm/s';
 saveVarsTmp{1}(3, 1).Description = '';
+
+saveVarsTmp{1}(4, 1) = Simulink.BusElement;
+saveVarsTmp{1}(4, 1).Name = 'Acceleration';
+saveVarsTmp{1}(4, 1).Complexity = 'real';
+saveVarsTmp{1}(4, 1).Dimensions = [1 3];
+saveVarsTmp{1}(4, 1).DataType = 'double';
+saveVarsTmp{1}(4, 1).Min = [];
+saveVarsTmp{1}(4, 1).Max = [];
+saveVarsTmp{1}(4, 1).DimensionsMode = 'Fixed';
+saveVarsTmp{1}(4, 1).SamplingMode = 'Sample based';
+saveVarsTmp{1}(4, 1).DocUnits = 'm/s^2';
+saveVarsTmp{1}(4, 1).Description = '';
+
+saveVarsTmp{1}(5, 1) = Simulink.BusElement;
+saveVarsTmp{1}(5, 1).Name = 'Orientation';
+saveVarsTmp{1}(5, 1).Complexity = 'real';
+saveVarsTmp{1}(5, 1).Dimensions = [1 3];
+saveVarsTmp{1}(5, 1).DataType = 'double';
+saveVarsTmp{1}(5, 1).Min = [];
+saveVarsTmp{1}(5, 1).Max = [];
+saveVarsTmp{1}(5, 1).DimensionsMode = 'Fixed';
+saveVarsTmp{1}(5, 1).SamplingMode = 'Sample based';
+saveVarsTmp{1}(5, 1).DocUnits = 'deg';
+saveVarsTmp{1}(5, 1).Description = '';
+
+saveVarsTmp{1}(6, 1) = Simulink.BusElement;
+saveVarsTmp{1}(6, 1).Name = 'AngularVelocity';
+saveVarsTmp{1}(6, 1).Complexity = 'real';
+saveVarsTmp{1}(6, 1).Dimensions = [1 3];
+saveVarsTmp{1}(6, 1).DataType = 'double';
+saveVarsTmp{1}(6, 1).Min = [];
+saveVarsTmp{1}(6, 1).Max = [];
+saveVarsTmp{1}(6, 1).DimensionsMode = 'Fixed';
+saveVarsTmp{1}(6, 1).SamplingMode = 'Sample based';
+saveVarsTmp{1}(6, 1).DocUnits = 'deg/s';
+saveVarsTmp{1}(6, 1).Description = '';
+
+saveVarsTmp{1}(7, 1) = Simulink.BusElement;
+saveVarsTmp{1}(7, 1).Name = 'AngularAcceleration';
+saveVarsTmp{1}(7, 1).Complexity = 'real';
+saveVarsTmp{1}(7, 1).Dimensions = [1 3];
+saveVarsTmp{1}(7, 1).DataType = 'double';
+saveVarsTmp{1}(7, 1).Min = [];
+saveVarsTmp{1}(7, 1).Max = [];
+saveVarsTmp{1}(7, 1).DimensionsMode = 'Fixed';
+saveVarsTmp{1}(7, 1).SamplingMode = 'Sample based';
+saveVarsTmp{1}(7, 1).DocUnits = 'deg/s^2';
+saveVarsTmp{1}(7, 1).Description = '';
+
+BusEgoVehicleState.Elements = saveVarsTmp{1};
+clear saveVarsTmp;
+
+%% Ego Vehicle Pose
+BusEgoVehiclePose = Simulink.Bus;
+BusEgoVehiclePose.Description = '';
+BusEgoVehiclePose.DataScope = 'Auto';
+BusEgoVehiclePose.HeaderFile = '';
+BusEgoVehiclePose.Alignment = -1;
+
+saveVarsTmp{1} = Simulink.BusElement;
+saveVarsTmp{1}.Name = 'ActorID';
+saveVarsTmp{1}.Complexity = 'real';
+saveVarsTmp{1}.Dimensions = [1 1];
+saveVarsTmp{1}.DataType = 'double';
+saveVarsTmp{1}.Min = [];
+saveVarsTmp{1}.Max = [];
+saveVarsTmp{1}.DimensionsMode = 'Fixed';
+saveVarsTmp{1}.SamplingMode = 'Sample based';
+saveVarsTmp{1}.DocUnits = '';
+saveVarsTmp{1}.Description = '';
+
+saveVarsTmp{1}(2, 1) = Simulink.BusElement;
+saveVarsTmp{1}(2, 1).Name = 'Position';
+saveVarsTmp{1}(2, 1).Complexity = 'real';
+saveVarsTmp{1}(2, 1).Dimensions = [1 3];
+saveVarsTmp{1}(2, 1).DataType = 'double';
+saveVarsTmp{1}(2, 1).Min = [];
+saveVarsTmp{1}(2, 1).Max = [];
+saveVarsTmp{1}(2, 1).DimensionsMode = 'Fixed';
+saveVarsTmp{1}(2, 1).SamplingMode = 'Sample based';
+saveVarsTmp{1}(2, 1).DocUnits = 'm';
+saveVarsTmp{1}(2, 1).Description = '';
+
+saveVarsTmp{1}(3, 1) = Simulink.BusElement;
+saveVarsTmp{1}(3, 1).Name = 'Velocity';
+saveVarsTmp{1}(3, 1).Complexity = 'real';
+saveVarsTmp{1}(3, 1).Dimensions = [1 3];
+saveVarsTmp{1}(3, 1).DataType = 'double';
+saveVarsTmp{1}(3, 1).Min = [];
+saveVarsTmp{1}(3, 1).Max = [];
+saveVarsTmp{1}(3, 1).DimensionsMode = 'Fixed';
+saveVarsTmp{1}(3, 1).SamplingMode = 'Sample based';
+saveVarsTmp{1}(3, 1).DocUnits = 'm/s';
+saveVarsTmp{1}(3, 1).Description = '';
+
 saveVarsTmp{1}(4, 1) = Simulink.BusElement;
 saveVarsTmp{1}(4, 1).Name = 'Roll';
 saveVarsTmp{1}(4, 1).Complexity = 'real';
@@ -88,8 +283,9 @@ saveVarsTmp{1}(4, 1).Min = [];
 saveVarsTmp{1}(4, 1).Max = [];
 saveVarsTmp{1}(4, 1).DimensionsMode = 'Fixed';
 saveVarsTmp{1}(4, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(4, 1).DocUnits = '';
+saveVarsTmp{1}(4, 1).DocUnits = 'deg';
 saveVarsTmp{1}(4, 1).Description = '';
+
 saveVarsTmp{1}(5, 1) = Simulink.BusElement;
 saveVarsTmp{1}(5, 1).Name = 'Pitch';
 saveVarsTmp{1}(5, 1).Complexity = 'real';
@@ -99,8 +295,9 @@ saveVarsTmp{1}(5, 1).Min = [];
 saveVarsTmp{1}(5, 1).Max = [];
 saveVarsTmp{1}(5, 1).DimensionsMode = 'Fixed';
 saveVarsTmp{1}(5, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(5, 1).DocUnits = '';
+saveVarsTmp{1}(5, 1).DocUnits = 'deg';
 saveVarsTmp{1}(5, 1).Description = '';
+
 saveVarsTmp{1}(6, 1) = Simulink.BusElement;
 saveVarsTmp{1}(6, 1).Name = 'Yaw';
 saveVarsTmp{1}(6, 1).Complexity = 'real';
@@ -110,8 +307,9 @@ saveVarsTmp{1}(6, 1).Min = [];
 saveVarsTmp{1}(6, 1).Max = [];
 saveVarsTmp{1}(6, 1).DimensionsMode = 'Fixed';
 saveVarsTmp{1}(6, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(6, 1).DocUnits = '';
+saveVarsTmp{1}(6, 1).DocUnits = 'deg';
 saveVarsTmp{1}(6, 1).Description = '';
+
 saveVarsTmp{1}(7, 1) = Simulink.BusElement;
 saveVarsTmp{1}(7, 1).Name = 'AngularVelocity';
 saveVarsTmp{1}(7, 1).Complexity = 'real';
@@ -121,123 +319,8 @@ saveVarsTmp{1}(7, 1).Min = [];
 saveVarsTmp{1}(7, 1).Max = [];
 saveVarsTmp{1}(7, 1).DimensionsMode = 'Fixed';
 saveVarsTmp{1}(7, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(7, 1).DocUnits = '';
+saveVarsTmp{1}(7, 1).DocUnits = 'deg/s';
 saveVarsTmp{1}(7, 1).Description = '';
-BusActorsActors.Elements = saveVarsTmp{1};
-clear saveVarsTmp;
 
-%% Ego Vehicle State
-BusVehicleState = Simulink.Bus;
-BusVehicleState.Description = '';
-BusVehicleState.DataScope = 'Auto';
-BusVehicleState.HeaderFile = '';
-BusVehicleState.Alignment = -1;
-
-saveVarsTmp{1} = Simulink.BusElement;
-saveVarsTmp{1}.Name = 'position';
-saveVarsTmp{1}.Complexity = 'real';
-saveVarsTmp{1}.Dimensions = [2 1];
-saveVarsTmp{1}.DataType = 'double';
-saveVarsTmp{1}.Min = [];
-saveVarsTmp{1}.Max = [];
-saveVarsTmp{1}.DimensionsMode = 'Fixed';
-saveVarsTmp{1}.SamplingMode = 'Sample based';
-saveVarsTmp{1}.DocUnits = 'm';
-saveVarsTmp{1}.Description = '';
-
-saveVarsTmp{1}(2, 1) = Simulink.BusElement;
-saveVarsTmp{1}(2, 1).Name = 'velocity';
-saveVarsTmp{1}(2, 1).Complexity = 'real';
-saveVarsTmp{1}(2, 1).Dimensions = [2 1];
-saveVarsTmp{1}(2, 1).DataType = 'double';
-saveVarsTmp{1}(2, 1).Min = [];
-saveVarsTmp{1}(2, 1).Max = [];
-saveVarsTmp{1}(2, 1).DimensionsMode = 'Fixed';
-saveVarsTmp{1}(2, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(2, 1).DocUnits = 'm/s';
-saveVarsTmp{1}(2, 1).Description = '';
-
-saveVarsTmp{1}(3, 1) = Simulink.BusElement;
-saveVarsTmp{1}(3, 1).Name = 'yaw';
-saveVarsTmp{1}(3, 1).Complexity = 'real';
-saveVarsTmp{1}(3, 1).Dimensions = [1 1];
-saveVarsTmp{1}(3, 1).DataType = 'double';
-saveVarsTmp{1}(3, 1).Min = [];
-saveVarsTmp{1}(3, 1).Max = [];
-saveVarsTmp{1}(3, 1).DimensionsMode = 'Fixed';
-saveVarsTmp{1}(3, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(3, 1).DocUnits = 'deg';
-saveVarsTmp{1}(3, 1).Description = '';
-
-saveVarsTmp{1}(4, 1) = Simulink.BusElement;
-saveVarsTmp{1}(4, 1).Name = 'yawRate';
-saveVarsTmp{1}(4, 1).Complexity = 'real';
-saveVarsTmp{1}(4, 1).Dimensions = [1 1];
-saveVarsTmp{1}(4, 1).DataType = 'double';
-saveVarsTmp{1}(4, 1).Min = [];
-saveVarsTmp{1}(4, 1).Max = [];
-saveVarsTmp{1}(4, 1).DimensionsMode = 'Fixed';
-saveVarsTmp{1}(4, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(4, 1).DocUnits = 'deg/s';
-saveVarsTmp{1}(4, 1).Description = '';
-
-BusVehicleState.Elements = saveVarsTmp{1};
-clear saveVarsTmp;
-
- %% Ego Vehicle State Derivative
-BusVehicleStateDerivative = Simulink.Bus;
-BusVehicleStateDerivative.Description = '';
-BusVehicleStateDerivative.DataScope = 'Auto';
-BusVehicleStateDerivative.HeaderFile = '';
-BusVehicleStateDerivative.Alignment = -1;
-
-saveVarsTmp{1} = Simulink.BusElement;
-saveVarsTmp{1}.Name = 'velocity';
-saveVarsTmp{1}.Complexity = 'real';
-saveVarsTmp{1}.Dimensions = [2 1];
-saveVarsTmp{1}.DataType = 'double';
-saveVarsTmp{1}.Min = [];
-saveVarsTmp{1}.Max = [];
-saveVarsTmp{1}.DimensionsMode = 'Fixed';
-saveVarsTmp{1}.SamplingMode = 'Sample based';
-saveVarsTmp{1}.DocUnits = 'm/s';
-saveVarsTmp{1}.Description = '';
-
-saveVarsTmp{1}(2, 1) = Simulink.BusElement;
-saveVarsTmp{1}(2, 1).Name = 'acceleration';
-saveVarsTmp{1}(2, 1).Complexity = 'real';
-saveVarsTmp{1}(2, 1).Dimensions = [2 1];
-saveVarsTmp{1}(2, 1).DataType = 'double';
-saveVarsTmp{1}(2, 1).Min = [];
-saveVarsTmp{1}(2, 1).Max = [];
-saveVarsTmp{1}(2, 1).DimensionsMode = 'Fixed';
-saveVarsTmp{1}(2, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(2, 1).DocUnits = 'm/s^2';
-saveVarsTmp{1}(2, 1).Description = '';
-
-saveVarsTmp{1}(3, 1) = Simulink.BusElement;
-saveVarsTmp{1}(3, 1).Name = 'yawRate';
-saveVarsTmp{1}(3, 1).Complexity = 'real';
-saveVarsTmp{1}(3, 1).Dimensions = [1 1];
-saveVarsTmp{1}(3, 1).DataType = 'double';
-saveVarsTmp{1}(3, 1).Min = [];
-saveVarsTmp{1}(3, 1).Max = [];
-saveVarsTmp{1}(3, 1).DimensionsMode = 'Fixed';
-saveVarsTmp{1}(3, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(3, 1).DocUnits = 'deg/s';
-saveVarsTmp{1}(3, 1).Description = '';
-
-saveVarsTmp{1}(4, 1) = Simulink.BusElement;
-saveVarsTmp{1}(4, 1).Name = 'yawAcc';
-saveVarsTmp{1}(4, 1).Complexity = 'real';
-saveVarsTmp{1}(4, 1).Dimensions = [1 1];
-saveVarsTmp{1}(4, 1).DataType = 'double';
-saveVarsTmp{1}(4, 1).Min = [];
-saveVarsTmp{1}(4, 1).Max = [];
-saveVarsTmp{1}(4, 1).DimensionsMode = 'Fixed';
-saveVarsTmp{1}(4, 1).SamplingMode = 'Sample based';
-saveVarsTmp{1}(4, 1).DocUnits = 'deg/s^2';
-saveVarsTmp{1}(4, 1).Description = '';
-
-BusVehicleStateDerivative.Elements = saveVarsTmp{1};
+BusEgoVehiclePose.Elements = saveVarsTmp{1};
 clear saveVarsTmp;
