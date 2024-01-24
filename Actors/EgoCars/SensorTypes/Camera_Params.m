@@ -8,8 +8,10 @@ classdef Camera_Params
         FocalLength_X=1814.81; % corresponds to FOV=20deg
         FocalLength_Y=1814.81;
 
-        Image_Width=640;
+        Image_Width=640; % pixels
         Image_Height=480;
+        OpticalCenter_X = 320;
+        OpticalCenter_Y = 240;
 
         Range_Max=150; % meters
 
@@ -17,7 +19,24 @@ classdef Camera_Params
     end
 
     methods
-        function obj = Camera_Params(FOV)
+        function obj = Camera_Params(width, height, FOV)
+            % Image Resolutions
+            obj.Image_Width=width;
+            obj.Image_Height=height;
+
+            obj.OpticalCenter_X = width/2;
+            obj.OpticalCenter_Y = height/2;
+
+            % FOV
+            obj.FOV=FOV;
+
+            obj.FocalLength_X=obj.Image_Width/(2*tand(FOV/2));
+            obj.FocalLength_Y=obj.Image_Height/(2*tand(FOV/2));
+        end
+
+        function obj = FieldOfView(obj, FOV)
+            obj.FOV=FOV;
+
             obj.FocalLength_X=obj.Image_Width/(2*tand(FOV/2));
             obj.FocalLength_Y=obj.Image_Height/(2*tand(FOV/2));
         end
