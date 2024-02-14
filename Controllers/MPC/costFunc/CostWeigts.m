@@ -8,7 +8,6 @@ classdef CostWeigts
         obsAvoid
         RL
         softConstraintPenalty
-        terminalState
     end
 
     methods

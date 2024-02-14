@@ -1,25 +1,31 @@
-function stateDot = vehicleDynamics_Simple(state, input)
+function nextState = vehicleDynamics_Simple(state, input, ...
+    Ts, egoCar_params, waypoints, boundaries, ...
+    tracks, costFun_weights)
+
     % Unpack the state and input
     x = state(1);
     y = state(2);
-    vx = state(3);
-    vy = state(4);
-    yaw = state(5);
-    yaw_rate = state(6);
+    yaw = state(3);
+    v = state(4);
+
+    steer = input(1);
+    acc = input(2);
     
-    steering_angle = input(1);
-    longitudinal_acc = input(2);
+    % Wheelbase of the vehicle in meters
+    L = egoCar_params.Dynamics.lf + egoCar_params.Dynamics.lr; 
 
-    L = 3; % Wheelbase of the vehicle in meters
+    % Vehicle dynamics equations - continuous
+    dx = v*cosd(yaw);
+    dy = v*sind(yaw);
+    dyaw = v*tand(steer)/L;
+    dv = acc;
 
-    % Vehicle dynamics equations
-    dx = vx;
-    dy = vy;
-    dvx = longitudinal_acc;
-    dvy = (vx * tan(steering_angle)) / L;
-    dyaw = yaw_rate;
-    dyaw_rate = (vx * tan(steering_angle)) / (L^2);
+    % Euler's method
+    x1=x+dx*Ts;
+    y1=y+dy*Ts;
+    yaw1=yaw+dyaw*Ts;
+    v1=v+dv*Ts;
 
-    % Return the derivative of the state
-    stateDot = [dx; dy; dvx; dvy; dyaw; dyaw_rate];
+    % Return the next state
+    nextState = [x1;y1;yaw1;v1];
 end

@@ -1,19 +1,28 @@
-function J = vehicleDynamics_simple_Jacobian(state, input)
-    vx = state(3);
-    steering_angle = input(1);
+function [J_state, J_input] = vehicleDynamics_Simple_Jacobian(state, input, ...
+    Ts, egoCar_params, waypoints, boundaries, ...
+    tracks, costFun_weights)
 
-    L = 3; % Wheelbase of the vehicle
+    % Unpack the state and input
+    x = state(1);
+    y = state(2);
+    yaw = state(3);
+    v = state(4);
 
-    % Initialize the Jacobian matrix
-    J = zeros(6, 8);
+    steer = input(1);
+    acc = input(2);
+    
+    % Wheelbase of the vehicle in meters
+    L = egoCar_params.Dynamics.lf+egoCar_params.Dynamics.lr; 
+    
+    % Pre-computed J_state expression
+    J_state=[1, 0, -Ts*v*sind(yaw, Ts*cosd(yaw)); 
+        0, 1, Ts*v*cosd(yaw, Ts*sind(yaw)); 
+        0, 0, 1, (Ts*tand(steer))/L; 
+        0, 0, 0, 1];
 
-    % Partial derivatives
-    J(3, 3) = 1; % dvx/dvx
-    J(3, 8) = 1; % dvx/da
-    J(4, 3) = tan(steering_angle) / L; % dvy/dvx
-    J(4, 7) = (vx / (cos(steering_angle)^2)) / L; % dvy/dδ
-    J(6, 3) = tan(steering_angle) / (L^2); % dyaw_rate/dvx
-    J(6, 7) = (vx / (cos(steering_angle)^2)) / (L^2); % dyaw_rate/dδ
-
-    % Other derivatives are zero and are already initialized
+    % Pre-computed J_input expression
+    J_input=[0, 0; 
+        0, 0; 
+        (Ts*v*(tand(steer)^2 + 1))/L, 0; 
+        0, Ts];
 end

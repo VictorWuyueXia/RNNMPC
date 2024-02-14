@@ -6,8 +6,8 @@ classdef Limits
         accMAX = 8; % m/s^2
         jerkMAX = 8;
         brakeMAX = 15; % m/s^2
-        turnAngleMAX = deg2rad(30); % max turn angle in radian
-        turnAngleRateMAX = deg2rad(30); % max turn angle change rate in radian
+        turnAngleMAX = 30; % max turn angle in radian
+        turnAngleRateMAX = 30; % max turn angle change rate in radian
 
     end
 
