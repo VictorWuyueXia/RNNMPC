@@ -1,6 +1,5 @@
 function nextState = vehicleDynamics_Simple(state, input, ...
-    Ts, egoCar_params, waypoints, boundaries, ...
-    tracks, costFun_weights)
+    Ts, L, waypoints, weights)
 
     % Unpack the state and input
     x = state(1);
@@ -10,9 +9,6 @@ function nextState = vehicleDynamics_Simple(state, input, ...
 
     steer = input(1);
     acc = input(2);
-    
-    % Wheelbase of the vehicle in meters
-    L = egoCar_params.Dynamics.lf + egoCar_params.Dynamics.lr; 
 
     % Vehicle dynamics equations - continuous
     dx = v*cosd(yaw);

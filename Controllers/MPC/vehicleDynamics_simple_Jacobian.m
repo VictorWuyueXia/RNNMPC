@@ -1,6 +1,5 @@
 function [J_state, J_input] = vehicleDynamics_Simple_Jacobian(state, input, ...
-    Ts, egoCar_params, waypoints, boundaries, ...
-    tracks, costFun_weights)
+    Ts, L, waypoints, weights)
 
     % Unpack the state and input
     x = state(1);

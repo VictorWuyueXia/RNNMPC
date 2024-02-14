@@ -1,8 +1,9 @@
-function cost = mpcCostFunction(x, u, Ts, egoCar_params, waypoints, boundaries, tracks, weights)
-    cost_progress=0;
-    cost_inputs=input_costFun(u,weights.input);
-    cost_laneKeeping=0;
+function cost = mpcCostFunction(x, u, Ts, L, waypoints, weights)
+
+    cost_progress=progress_costFunc(x, waypoints, weights(3:4));
+    cost_inputs=input_costFunc(u, weights(1:2));
     cost_obstacleAvoidance=0;
+    cost_laneKeeping=0;
     cost_RL=0;
     cost_softConstraints=0;
     
