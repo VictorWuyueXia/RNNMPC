@@ -2,6 +2,7 @@ function [J_state, J_input] = vehicleDynamics_Simple_Jacobian(state, input, ...
     Ts, L, waypoints, weights)
 
     % Unpack the state and input
+    % [x_pos, y_pos, yaw_direction, speed]
     x = state(1);
     y = state(2);
     yaw = state(3);

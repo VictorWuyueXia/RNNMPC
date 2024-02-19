@@ -25,7 +25,4 @@
 void binary_expand_op(real_T in1[2], const k_struct_T *in2, int32_T in3,
                       const emxArray_real_T *in4);
 
-void binary_expand_op_1(real_T in1[4], const k_struct_T *in2, int32_T in3,
-                        const real_T in4[44]);
-
 /* End of code generation (znlmpc_objfun.h) */

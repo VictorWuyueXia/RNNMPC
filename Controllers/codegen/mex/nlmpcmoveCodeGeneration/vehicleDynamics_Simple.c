@@ -26,6 +26,7 @@ void vehicleDynamics_Simple(const real_T state[4], const real_T input[2],
   real_T x_tmp;
   int8_T n;
   /*  Unpack the state and input */
+  /*  [x_pos, y_pos, yaw_direction, speed] */
   /*  Vehicle dynamics equations - continuous */
   if (muDoubleScalarIsInf(state[2]) || muDoubleScalarIsNaN(state[2])) {
     x = rtNaN;

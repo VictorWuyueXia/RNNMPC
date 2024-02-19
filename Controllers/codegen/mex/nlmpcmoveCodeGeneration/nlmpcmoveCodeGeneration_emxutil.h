@@ -42,9 +42,11 @@ void emxCopyMatrix_real_T(real_T dst[4], const real_T src[4]);
 
 void emxCopyMatrix_real_T1(real_T dst[2], const real_T src[2]);
 
-void emxCopyMatrix_real_T3(real_T dst[40], const real_T src[40]);
+void emxCopyMatrix_real_T3(real_T dst[10], const real_T src[10]);
 
 void emxCopyMatrix_real_T4(real_T dst[20], const real_T src[20]);
+
+void emxCopyMatrix_real_T5(real_T dst[40], const real_T src[40]);
 
 void emxCopyStruct_struct_T(i_struct_T *dst, const i_struct_T *src);
 

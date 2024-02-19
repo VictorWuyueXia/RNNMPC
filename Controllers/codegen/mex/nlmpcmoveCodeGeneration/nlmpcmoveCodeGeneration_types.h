@@ -17,12 +17,22 @@
 #include <stddef.h>
 
 /* Type Definitions */
+#ifndef typedef_cell_0
+#define typedef_cell_0
+typedef struct {
+  real_T f1;
+  real_T f2;
+  real_T f3[6];
+  real_T f4[8];
+} cell_0;
+#endif /* typedef_cell_0 */
+
 #ifndef typedef_struct2_T
 #define typedef_struct2_T
 typedef struct {
   real_T MVopt[22];
   real_T Xopt[44];
-  real_T Yopt[44];
+  real_T Yopt[11];
   real_T Topt[11];
   real_T Slack;
   real_T ExitFlag;
@@ -180,6 +190,18 @@ typedef struct {
 } d_struct_T;
 #endif /* typedef_d_struct_T */
 
+#ifndef typedef_struct1_T
+#define typedef_struct1_T
+typedef struct {
+  emxArray_real_T *ref;
+  emxArray_real_T *MVTarget;
+  cell_0 Parameters;
+  emxArray_real_T *X0;
+  emxArray_real_T *MV0;
+  real_T Slack0;
+} struct1_T;
+#endif /* typedef_struct1_T */
+
 #ifndef typedef_e_struct_T
 #define typedef_e_struct_T
 typedef struct {
@@ -252,27 +274,18 @@ struct emxArray_ptrdiff_t {
 typedef struct emxArray_ptrdiff_t emxArray_ptrdiff_t;
 #endif /* typedef_emxArray_ptrdiff_t */
 
-#ifndef typedef_cell_0
-#define typedef_cell_0
-typedef struct {
-  real_T f1;
-  real_T f2;
-  real_T f3[6];
-} cell_0;
-#endif /* typedef_cell_0 */
-
 #ifndef typedef_i_struct_T
 #define typedef_i_struct_T
 typedef struct {
   real_T x[4];
   real_T lastMV[2];
   emxArray_real_T *ref;
-  real_T OutputWeights[40];
+  real_T OutputWeights[10];
   real_T MVWeights[20];
   real_T MVRateWeights[20];
   real_T ECRWeight;
-  real_T OutputMin[40];
-  real_T OutputMax[40];
+  real_T OutputMin[10];
+  real_T OutputMax[10];
   real_T StateMin[40];
   real_T StateMax[40];
   real_T MVMin[20];
@@ -317,18 +330,6 @@ typedef struct {
   k_struct_T workspace;
 } anonymous_function;
 #endif /* typedef_anonymous_function */
-
-#ifndef typedef_struct1_T
-#define typedef_struct1_T
-typedef struct {
-  emxArray_real_T *ref;
-  emxArray_real_T *MVTarget;
-  cell_0 Parameters;
-  emxArray_real_T *X0;
-  emxArray_real_T *MV0;
-  real_T Slack0;
-} struct1_T;
-#endif /* typedef_struct1_T */
 
 #ifndef typedef_coder_internal_stickyStruct
 #define typedef_coder_internal_stickyStruct
