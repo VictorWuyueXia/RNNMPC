@@ -1,4 +1,8 @@
-function cost = input_costFunc(u,weight)
+function cost = input_costFunc(U,weight)
     % quadratic cost for inputs
-    cost =u'*weight*u;
+    cost=0;
+    for i=1:size(U,1)
+        u=U(i,:)';
+        cost = cost + u'*weight*u;
+    end
 end

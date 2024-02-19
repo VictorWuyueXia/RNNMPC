@@ -8,8 +8,8 @@ function nextState = vehicleDynamics_Simple(state, input, ...
     yaw = state(3);
     v = state(4);
 
-    steer = input(1);
-    acc = input(2);
+    acc = input(1);
+    steer = input(2);
 
     % Vehicle dynamics equations - continuous
     dx = v*cosd(yaw);

@@ -75,17 +75,12 @@ void emxCopyMatrix_real_T1(real_T dst[2], const real_T src[2])
   }
 }
 
-void emxCopyMatrix_real_T3(real_T dst[10], const real_T src[10])
-{
-  memcpy(&dst[0], &src[0], 10U * sizeof(real_T));
-}
-
-void emxCopyMatrix_real_T4(real_T dst[20], const real_T src[20])
+void emxCopyMatrix_real_T3(real_T dst[20], const real_T src[20])
 {
   memcpy(&dst[0], &src[0], 20U * sizeof(real_T));
 }
 
-void emxCopyMatrix_real_T5(real_T dst[40], const real_T src[40])
+void emxCopyMatrix_real_T4(real_T dst[40], const real_T src[40])
 {
   memcpy(&dst[0], &src[0], 40U * sizeof(real_T));
 }
@@ -96,17 +91,17 @@ void emxCopyStruct_struct_T(i_struct_T *dst, const i_struct_T *src)
   emxCopyMatrix_real_T1(dst->lastMV, src->lastMV);
   emxCopy_real_T(&dst->ref, &src->ref);
   emxCopyMatrix_real_T3(dst->OutputWeights, src->OutputWeights);
-  emxCopyMatrix_real_T4(dst->MVWeights, src->MVWeights);
-  emxCopyMatrix_real_T4(dst->MVRateWeights, src->MVRateWeights);
+  emxCopyMatrix_real_T3(dst->MVWeights, src->MVWeights);
+  emxCopyMatrix_real_T3(dst->MVRateWeights, src->MVRateWeights);
   dst->ECRWeight = src->ECRWeight;
   emxCopyMatrix_real_T3(dst->OutputMin, src->OutputMin);
   emxCopyMatrix_real_T3(dst->OutputMax, src->OutputMax);
-  emxCopyMatrix_real_T5(dst->StateMin, src->StateMin);
-  emxCopyMatrix_real_T5(dst->StateMax, src->StateMax);
-  emxCopyMatrix_real_T4(dst->MVMin, src->MVMin);
-  emxCopyMatrix_real_T4(dst->MVMax, src->MVMax);
-  emxCopyMatrix_real_T4(dst->MVRateMin, src->MVRateMin);
-  emxCopyMatrix_real_T4(dst->MVRateMax, src->MVRateMax);
+  emxCopyMatrix_real_T4(dst->StateMin, src->StateMin);
+  emxCopyMatrix_real_T4(dst->StateMax, src->StateMax);
+  emxCopyMatrix_real_T3(dst->MVMin, src->MVMin);
+  emxCopyMatrix_real_T3(dst->MVMax, src->MVMax);
+  emxCopyMatrix_real_T3(dst->MVRateMin, src->MVRateMin);
+  emxCopyMatrix_real_T3(dst->MVRateMax, src->MVRateMax);
   emxCopy_real_T(&dst->MVScaledTarget, &src->MVScaledTarget);
   dst->Parameters = src->Parameters;
 }
@@ -501,7 +496,7 @@ void emxFree_real_T(emxArray_real_T **pEmxArray)
 
 void emxInitStruct_struct1_T(struct1_T *pStruct)
 {
-  emxInit_real_T(&pStruct->ref, 1);
+  emxInit_real_T(&pStruct->ref, 2);
   emxInit_real_T(&pStruct->MVTarget, 2);
   emxInit_real_T(&pStruct->X0, 2);
   emxInit_real_T(&pStruct->MV0, 2);

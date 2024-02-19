@@ -23,8 +23,8 @@
 
 /* Function Declarations */
 void c_nlmpcmoveCodeGeneration_anonF(
-    const real_T runtimedata_x[4], const real_T runtimedata_OutputMin[10],
-    const real_T runtimedata_OutputMax[10], real_T runtimedata_Parameters_f1,
+    const real_T runtimedata_x[4], const real_T runtimedata_OutputMin[20],
+    const real_T runtimedata_OutputMax[20], real_T runtimedata_Parameters_f1,
     real_T runtimedata_Parameters_f2, const real_T z[51],
     emxArray_real_T *varargout_1, real_T varargout_2[40],
     emxArray_real_T *varargout_3, real_T varargout_4[2040]);

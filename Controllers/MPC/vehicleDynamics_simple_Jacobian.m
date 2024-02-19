@@ -8,16 +8,13 @@ function [J_state, J_input] = vehicleDynamics_Simple_Jacobian(state, input, ...
     yaw = state(3);
     v = state(4);
 
-    steer = input(1);
-    acc = input(2);
-    
-    % Wheelbase of the vehicle in meters
-    L = egoCar_params.Dynamics.lf+egoCar_params.Dynamics.lr; 
+    acc = input(1);
+    steer = input(2);
     
     % Pre-computed J_state expression
-    J_state=[1, 0, -Ts*v*sind(yaw, Ts*cosd(yaw)); 
-        0, 1, Ts*v*cosd(yaw, Ts*sind(yaw)); 
-        0, 0, 1, (Ts*tand(steer))/L; 
+    J_state=[1, 0, -Ts*v*sind(yaw), Ts*cosd(yaw)
+        0, 1, Ts*v*cosd(yaw), Ts*sind(yaw)
+        0, 0, 1, (Ts*tand(steer))/L
         0, 0, 0, 1];
 
     % Pre-computed J_input expression

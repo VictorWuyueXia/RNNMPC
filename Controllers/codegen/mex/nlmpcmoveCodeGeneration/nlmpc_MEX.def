@@ -24,9 +24,8 @@ emxInitStruct_struct_T3
 emxInitStruct_struct_T
 emxInitStruct_struct_T1
 emxCopyStruct_struct_T
-emxCopyMatrix_real_T3
-emxCopyMatrix_real_T5
 emxCopyMatrix_real_T4
+emxCopyMatrix_real_T3
 emxCopyStruct_struct_T1
 emxCopyMatrix_real_T
 emxCopy_real_T
