@@ -24,6 +24,7 @@ typedef struct {
   real_T f2;
   real_T f3[6];
   real_T f4[16];
+  real_T f5[6];
 } cell_0;
 #endif /* typedef_cell_0 */
 
@@ -32,7 +33,7 @@ typedef struct {
 typedef struct {
   real_T MVopt[22];
   real_T Xopt[44];
-  real_T Yopt[22];
+  real_T Yopt[44];
   real_T Topt[11];
   real_T Slack;
   real_T ExitFlag;
@@ -280,12 +281,12 @@ typedef struct {
   real_T x[4];
   real_T lastMV[2];
   emxArray_real_T *ref;
-  real_T OutputWeights[20];
+  real_T OutputWeights[40];
   real_T MVWeights[20];
   real_T MVRateWeights[20];
   real_T ECRWeight;
-  real_T OutputMin[20];
-  real_T OutputMax[20];
+  real_T OutputMin[40];
+  real_T OutputMax[40];
   real_T StateMin[40];
   real_T StateMax[40];
   real_T MVMin[20];

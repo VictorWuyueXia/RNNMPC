@@ -97,6 +97,8 @@ real_T fmincon(const i_struct_T *fun_workspace_runtimedata,
                                   nonlcon_workspace_runtimedata->OutputMax,
                                   nonlcon_workspace_runtimedata->Parameters.f1,
                                   nonlcon_workspace_runtimedata->Parameters.f2,
+                                  nonlcon_workspace_runtimedata->Parameters.f5,
+                                  nonlcon_workspace_userdata->PredictionHorizon,
                                   x0, varargout_1, TrialState.cEq, varargout_3,
                                   varargout_4);
   emxFree_real_T(&varargout_3);
@@ -362,7 +364,7 @@ real_T fmincon(const i_struct_T *fun_workspace_runtimedata,
           ub[WorkingSet.indexFixed->data[nVarMax] - 1];
     }
     TrialState.sqpFval = evalObjAndConstrAndDerivatives(
-        mNonlinIneq, nonlcon_workspace_runtimedata,
+        mNonlinIneq, nonlcon_workspace_runtimedata, nonlcon_workspace_userdata,
         &FcnEvaluator.next.next.next.next.next.next.next.next.value.workspace,
         TrialState.xstarsqp, TrialState.grad, TrialState.cIneq,
         TrialState.iNonIneq0, TrialState.cEq, TrialState.iNonEq0,

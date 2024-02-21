@@ -1,25 +1,73 @@
-function constraints = inequalityConstraints(state, input , e, data, params)
+function constraints = inequalityConstraints(X, U, e, data, ...
+    Ts, L, waypoints, weights, limits)
+    %% Make inequality constraints
+    % [ieqCon1
+    %  ieqCon2-e] <=0
 
     % Unpack
-    Ts=data.Ts;
     N = data.PredictionHorizon;
-    L=params.L;
-    waypoints=params.waypoints;
-    weights=params.weight;
-
-    % [state stateRate input inpuRate LaneKeeping obsAvoid]
-
-    % State is [x y yaw speed(v)]
-    % Constraint is on v
-    stateCon=[];
-
-
-
-    stateRateCon=input_costFunc(u, weights(1:2,1:2));
-    inputCon=0;
-    inpuRateCon=0;
-    LaneKeepingCon=0;
-    obsAvoidCon=0;
+    % lastMV=data.LastMV;
     
-    constraints= [state stateRate input inpuRate LaneKeeping obsAvoid]';
+    % [speedMAX accMAX jerkMAX brakeMAX turnAngleMAX turnAngleRateMAX]
+    speedMax=limits(1);
+    accMax=limits(2);
+    jerkMax=limits(3);
+    brakeMax=limits(4);
+    steerMax=limits(5);
+    steerRateMax=limits(6);
+
+    % Xs are PredictionHorizon rows and 4 columns
+    % The first row is the current X, which cannot be changed
+    x=X(:,1);
+    y=X(:,2);
+    yaw=X(:,3);
+    v=X(:,4);
+
+    % Inputs are PredictionHorizon rows and 2 columns
+    % The last row is duplicated for the final step
+    acc=U(:,1);
+    steer=U(:,2);
+
+    % [X{speed} XRate{G-force, G-force jerk} input inpuRate ...
+    % LaneKeeping obsAvoid}]
+
+    %% State 
+    % [x y yaw speed(v)]
+
+    stateCon=[abs(v(2:N+1))-speedMax-e]; % speed
+    
+    %% StateRate
+    yawRate=deg2rad(diff(yaw))/Ts;
+    turnRadius=abs(v(2:N+1)./yawRate); % r=v/omega
+    turnRadius(isnan(turnRadius))=0;% in case yawRate==0
+    linearAcc=diff(v);
+    centriAcc=linearAcc.*2./turnRadius; % a=v^2/r
+    centriAcc(isnan(centriAcc))=0;% in case turnRadius==0
+    % totalAcc=(centriAcc.^2 + linearAcc.^2).*0.5; % a=sqrt(al^2+ar^2)
+    
+    centriJerk=diff(centriAcc);
+
+    stateRateCon=[abs(centriAcc)-accMax-e; % G-force
+        abs(centriJerk)-jerkMax-e]; % G-force jerk
+
+
+    %% Input 
+    % [acc steer(deg)]
+    
+    inputCon=[linearAcc-accMax; % linear acc
+        -brakeMax-linearAcc;
+        abs(steer(1:N))-steerMax]; % steer
+
+    %% InputRate
+    linearJerk=diff(acc);
+    steerRate=diff(steer);
+
+    inpuRateCon=[abs(linearJerk)-jerkMax-e; % linear jerk
+        abs(steerRate)-steerRateMax-e]; % steer rate
+
+    %%
+    LaneKeepingCon=-1;
+    obsAvoidCon=-1;
+    
+    constraints= [stateCon;stateRateCon;inputCon;inpuRateCon;LaneKeepingCon;obsAvoidCon];
 end

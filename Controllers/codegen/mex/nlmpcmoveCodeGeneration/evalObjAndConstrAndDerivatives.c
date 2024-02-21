@@ -28,7 +28,8 @@
 real_T evalObjAndConstrAndDerivatives(
     int32_T c_obj_next_next_next_next_next_,
     const i_struct_T *d_obj_next_next_next_next_next_,
-    const k_struct_T *e_obj_next_next_next_next_next_, const real_T x[51],
+    const j_struct_T *e_obj_next_next_next_next_next_,
+    const k_struct_T *f_obj_next_next_next_next_next_, const real_T x[51],
     emxArray_real_T *grad_workspace, emxArray_real_T *Cineq_workspace,
     int32_T ineq0, real_T Ceq_workspace[40], int32_T eq0,
     emxArray_real_T *JacIneqTrans_workspace, int32_T iJI_col, int32_T ldJI,
@@ -60,16 +61,19 @@ real_T evalObjAndConstrAndDerivatives(
   real_T a[20];
   real_T b_dv[10];
   real_T R_tmp;
+  real_T R_tmp_tmp;
+  real_T b_cost_progress;
   real_T cost_inputs;
   real_T cost_progress;
   real_T d;
   real_T d1;
   real_T d2;
   real_T d3;
+  real_T de;
   real_T dx;
-  real_T f_obj_next_next_next_next_next_;
   real_T fval;
   real_T g_obj_next_next_next_next_next_;
+  real_T h_obj_next_next_next_next_next_;
   real_T target_relative_idx_0;
   real_T *Cineq_workspace_data;
   real_T *JacEqTrans_workspace_data;
@@ -107,56 +111,57 @@ real_T evalObjAndConstrAndDerivatives(
       X[(col + 11 * idx_current) + 1] = b_x[idx_current + (col << 2)];
     }
     X[11 * idx_current] =
-        e_obj_next_next_next_next_next_->runtimedata.x[idx_current];
+        f_obj_next_next_next_next_next_->runtimedata.x[idx_current];
   }
   for (idx_mat = 0; idx_mat < 2; idx_mat++) {
     Umv[11 * idx_mat + 10] = Umv[11 * idx_mat + 9];
     memcpy(&U[idx_mat * 11], &Umv[idx_mat * 11], 11U * sizeof(real_T));
   }
+  /*  Unpack */
   /*  weights is fed in as an array of  */
   /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
    * sofConstraints] */
   cost_progress = 0.0;
   for (idx_mat = 0; idx_mat < 11; idx_mat++) {
     /*  Rotation matrix for transforming to the vehicle's local frame */
-    cost_inputs = -X[idx_mat + 22];
-    R_tmp = cost_inputs;
+    R_tmp_tmp = -X[idx_mat + 22];
+    R_tmp = R_tmp_tmp;
     b_sind(&R_tmp);
-    b_cosd(&cost_inputs);
-    f_obj_next_next_next_next_next_ =
-        e_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
-        X[idx_mat];
+    b_cosd(&R_tmp_tmp);
     g_obj_next_next_next_next_next_ =
-        e_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
+        X[idx_mat];
+    h_obj_next_next_next_next_next_ =
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
         X[idx_mat + 11];
-    target_relative_idx_0 = cost_inputs * f_obj_next_next_next_next_next_ +
-                            -R_tmp * g_obj_next_next_next_next_next_;
-    d = R_tmp * f_obj_next_next_next_next_next_ +
-        cost_inputs * g_obj_next_next_next_next_next_;
+    target_relative_idx_0 = R_tmp_tmp * g_obj_next_next_next_next_next_ +
+                            -R_tmp * h_obj_next_next_next_next_next_;
+    d = R_tmp * g_obj_next_next_next_next_next_ +
+        R_tmp_tmp * h_obj_next_next_next_next_next_;
     cost_progress +=
         (target_relative_idx_0 *
-             e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
-         d * e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[5]) *
+             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
+         d * f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[5]) *
             target_relative_idx_0 +
         (target_relative_idx_0 *
-             e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
-         d * e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[7]) *
+             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
+         d * f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[7]) *
             d;
   }
   /*  quadratic cost for inputs */
   cost_inputs = 0.0;
-  d = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
-  d1 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
-  d2 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
-  d3 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
+  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
+  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
+  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
+  d3 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
   for (idx_mat = 0; idx_mat < 11; idx_mat++) {
-    f_obj_next_next_next_next_next_ = U[idx_mat + 11];
-    R_tmp = U[idx_mat];
-    cost_inputs += (R_tmp * d + f_obj_next_next_next_next_next_ * d1) * R_tmp +
-                   (R_tmp * d2 + f_obj_next_next_next_next_next_ * d3) *
-                       f_obj_next_next_next_next_next_;
+    R_tmp = U[idx_mat + 11];
+    R_tmp_tmp = U[idx_mat];
+    cost_inputs += (R_tmp_tmp * d + R_tmp * d1) * R_tmp_tmp +
+                   (R_tmp_tmp * d2 + R_tmp * d3) * R_tmp;
   }
-  fval = cost_progress + cost_inputs;
+  de = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1] * x[50];
+  fval = (cost_progress + cost_inputs) + de;
   memset(&a[0], 0, 20U * sizeof(real_T));
   for (idx_current = 0; idx_current < 44; idx_current++) {
     d = muDoubleScalarAbs(X[idx_current]);
@@ -165,62 +170,59 @@ real_T evalObjAndConstrAndDerivatives(
       xa[idx_current] = 1.0;
     }
   }
-  d = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
-  d1 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
-  d2 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
-  d3 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
+  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
+  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
+  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
+  d3 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
   for (idx_mat = 0; idx_mat < 10; idx_mat++) {
     for (j = 0; j < 4; j++) {
       dx = 1.0E-6 * xa[j];
       idx_current = (idx_mat + 11 * j) + 1;
       X[idx_current] += dx;
+      /*  Unpack */
       /*  weights is fed in as an array of  */
       /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
        * sofConstraints] */
       cost_progress = 0.0;
       for (col_end = 0; col_end < 11; col_end++) {
         /*  Rotation matrix for transforming to the vehicle's local frame */
-        cost_inputs = -X[col_end + 22];
-        R_tmp = cost_inputs;
+        R_tmp_tmp = -X[col_end + 22];
+        R_tmp = R_tmp_tmp;
         b_sind(&R_tmp);
-        b_cosd(&cost_inputs);
-        f_obj_next_next_next_next_next_ =
-            e_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
-            X[col_end];
+        b_cosd(&R_tmp_tmp);
         g_obj_next_next_next_next_next_ =
-            e_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
+            f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
+            X[col_end];
+        h_obj_next_next_next_next_next_ =
+            f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
             X[col_end + 11];
-        target_relative_idx_0 = cost_inputs * f_obj_next_next_next_next_next_ +
-                                -R_tmp * g_obj_next_next_next_next_next_;
-        f_obj_next_next_next_next_next_ =
-            R_tmp * f_obj_next_next_next_next_next_ +
-            cost_inputs * g_obj_next_next_next_next_next_;
+        target_relative_idx_0 = R_tmp_tmp * g_obj_next_next_next_next_next_ +
+                                -R_tmp * h_obj_next_next_next_next_next_;
+        R_tmp = R_tmp * g_obj_next_next_next_next_next_ +
+                R_tmp_tmp * h_obj_next_next_next_next_next_;
         cost_progress +=
             (target_relative_idx_0 *
-                 e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
-             f_obj_next_next_next_next_next_ *
-                 e_obj_next_next_next_next_next_->runtimedata.Parameters
-                     .f4[5]) *
+                 f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
+             R_tmp * f_obj_next_next_next_next_next_->runtimedata.Parameters
+                         .f4[5]) *
                 target_relative_idx_0 +
             (target_relative_idx_0 *
-                 e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
-             f_obj_next_next_next_next_next_ *
-                 e_obj_next_next_next_next_next_->runtimedata.Parameters
-                     .f4[7]) *
-                f_obj_next_next_next_next_next_;
+                 f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
+             R_tmp * f_obj_next_next_next_next_next_->runtimedata.Parameters
+                         .f4[7]) *
+                R_tmp;
       }
       /*  quadratic cost for inputs */
       cost_inputs = 0.0;
       for (col_end = 0; col_end < 11; col_end++) {
-        f_obj_next_next_next_next_next_ = U[col_end + 11];
-        R_tmp = U[col_end];
-        cost_inputs +=
-            (R_tmp * d + f_obj_next_next_next_next_next_ * d1) * R_tmp +
-            (R_tmp * d2 + f_obj_next_next_next_next_next_ * d3) *
-                f_obj_next_next_next_next_next_;
+        R_tmp = U[col_end + 11];
+        R_tmp_tmp = U[col_end];
+        cost_inputs += (R_tmp_tmp * d + R_tmp * d1) * R_tmp_tmp +
+                       (R_tmp_tmp * d2 + R_tmp * d3) * R_tmp;
       }
       X[idx_current] -= dx;
-      b_x[j + (idx_mat << 2)] = ((cost_progress + cost_inputs) - fval) / dx;
+      b_x[j + (idx_mat << 2)] =
+          (((cost_progress + cost_inputs) + de) - fval) / dx;
     }
   }
   for (idx_current = 0; idx_current < 22; idx_current++) {
@@ -230,165 +232,203 @@ real_T evalObjAndConstrAndDerivatives(
       Umv[idx_current] = 1.0;
     }
   }
-  d = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
-  d1 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
-  d2 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
-  d3 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
+  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
+  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
+  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
+  d3 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
   for (idx_mat = 0; idx_mat < 9; idx_mat++) {
     for (j = 0; j < 2; j++) {
       dx = 1.0E-6 * Umv[j];
       col = idx_mat + 11 * j;
       U[col] += dx;
+      /*  Unpack */
       /*  weights is fed in as an array of  */
       /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
        * sofConstraints] */
       cost_progress = 0.0;
       for (col_end = 0; col_end < 11; col_end++) {
         /*  Rotation matrix for transforming to the vehicle's local frame */
-        cost_inputs = -X[col_end + 22];
-        R_tmp = cost_inputs;
+        R_tmp_tmp = -X[col_end + 22];
+        R_tmp = R_tmp_tmp;
         b_sind(&R_tmp);
-        b_cosd(&cost_inputs);
-        f_obj_next_next_next_next_next_ =
-            e_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
-            X[col_end];
+        b_cosd(&R_tmp_tmp);
         g_obj_next_next_next_next_next_ =
-            e_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
+            f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
+            X[col_end];
+        h_obj_next_next_next_next_next_ =
+            f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
             X[col_end + 11];
-        target_relative_idx_0 = cost_inputs * f_obj_next_next_next_next_next_ +
-                                -R_tmp * g_obj_next_next_next_next_next_;
-        f_obj_next_next_next_next_next_ =
-            R_tmp * f_obj_next_next_next_next_next_ +
-            cost_inputs * g_obj_next_next_next_next_next_;
+        target_relative_idx_0 = R_tmp_tmp * g_obj_next_next_next_next_next_ +
+                                -R_tmp * h_obj_next_next_next_next_next_;
+        R_tmp = R_tmp * g_obj_next_next_next_next_next_ +
+                R_tmp_tmp * h_obj_next_next_next_next_next_;
         cost_progress +=
             (target_relative_idx_0 *
-                 e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
-             f_obj_next_next_next_next_next_ *
-                 e_obj_next_next_next_next_next_->runtimedata.Parameters
-                     .f4[5]) *
+                 f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
+             R_tmp * f_obj_next_next_next_next_next_->runtimedata.Parameters
+                         .f4[5]) *
                 target_relative_idx_0 +
             (target_relative_idx_0 *
-                 e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
-             f_obj_next_next_next_next_next_ *
-                 e_obj_next_next_next_next_next_->runtimedata.Parameters
-                     .f4[7]) *
-                f_obj_next_next_next_next_next_;
+                 f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
+             R_tmp * f_obj_next_next_next_next_next_->runtimedata.Parameters
+                         .f4[7]) *
+                R_tmp;
       }
       /*  quadratic cost for inputs */
       cost_inputs = 0.0;
       for (col_end = 0; col_end < 11; col_end++) {
-        f_obj_next_next_next_next_next_ = U[col_end + 11];
-        R_tmp = U[col_end];
-        cost_inputs +=
-            (R_tmp * d + f_obj_next_next_next_next_next_ * d1) * R_tmp +
-            (R_tmp * d2 + f_obj_next_next_next_next_next_ * d3) *
-                f_obj_next_next_next_next_next_;
+        R_tmp = U[col_end + 11];
+        R_tmp_tmp = U[col_end];
+        cost_inputs += (R_tmp_tmp * d + R_tmp * d1) * R_tmp_tmp +
+                       (R_tmp_tmp * d2 + R_tmp * d3) * R_tmp;
       }
       U[col] -= dx;
-      a[j + (idx_mat << 1)] = ((cost_progress + cost_inputs) - fval) / dx;
+      a[j + (idx_mat << 1)] =
+          (((cost_progress + cost_inputs) + de) - fval) / dx;
     }
   }
-  d = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
-  d1 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
-  d2 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
-  d3 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
+  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
+  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
+  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
+  d3 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
   for (j = 0; j < 2; j++) {
     dx = 1.0E-6 * Umv[j];
     col = 11 * j + 9;
     U[col] += dx;
     idx_current = 11 * j + 10;
     U[idx_current] += dx;
+    /*  Unpack */
     /*  weights is fed in as an array of  */
     /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
      * sofConstraints] */
     cost_progress = 0.0;
     for (idx_mat = 0; idx_mat < 11; idx_mat++) {
       /*  Rotation matrix for transforming to the vehicle's local frame */
-      cost_inputs = -X[idx_mat + 22];
-      R_tmp = cost_inputs;
+      R_tmp_tmp = -X[idx_mat + 22];
+      R_tmp = R_tmp_tmp;
       b_sind(&R_tmp);
-      b_cosd(&cost_inputs);
-      f_obj_next_next_next_next_next_ =
-          e_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
-          X[idx_mat];
+      b_cosd(&R_tmp_tmp);
       g_obj_next_next_next_next_next_ =
-          e_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
+          f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
+          X[idx_mat];
+      h_obj_next_next_next_next_next_ =
+          f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
           X[idx_mat + 11];
-      target_relative_idx_0 = cost_inputs * f_obj_next_next_next_next_next_ +
-                              -R_tmp * g_obj_next_next_next_next_next_;
-      f_obj_next_next_next_next_next_ =
-          R_tmp * f_obj_next_next_next_next_next_ +
-          cost_inputs * g_obj_next_next_next_next_next_;
+      target_relative_idx_0 = R_tmp_tmp * g_obj_next_next_next_next_next_ +
+                              -R_tmp * h_obj_next_next_next_next_next_;
+      R_tmp = R_tmp * g_obj_next_next_next_next_next_ +
+              R_tmp_tmp * h_obj_next_next_next_next_next_;
       cost_progress +=
           (target_relative_idx_0 *
-               e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
-           f_obj_next_next_next_next_next_ *
-               e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[5]) *
+               f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
+           R_tmp *
+               f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[5]) *
               target_relative_idx_0 +
           (target_relative_idx_0 *
-               e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
-           f_obj_next_next_next_next_next_ *
-               e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[7]) *
-              f_obj_next_next_next_next_next_;
+               f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
+           R_tmp *
+               f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[7]) *
+              R_tmp;
     }
     /*  quadratic cost for inputs */
     cost_inputs = 0.0;
     for (idx_mat = 0; idx_mat < 11; idx_mat++) {
-      f_obj_next_next_next_next_next_ = U[idx_mat + 11];
-      R_tmp = U[idx_mat];
-      cost_inputs +=
-          (R_tmp * d + f_obj_next_next_next_next_next_ * d1) * R_tmp +
-          (R_tmp * d2 + f_obj_next_next_next_next_next_ * d3) *
-              f_obj_next_next_next_next_next_;
+      R_tmp = U[idx_mat + 11];
+      R_tmp_tmp = U[idx_mat];
+      cost_inputs += (R_tmp_tmp * d + R_tmp * d1) * R_tmp_tmp +
+                     (R_tmp_tmp * d2 + R_tmp * d3) * R_tmp;
     }
     U[col] -= dx;
     U[idx_current] -= dx;
-    a[j + 18] = ((cost_progress + cost_inputs) - fval) / dx;
+    a[j + 18] = (((cost_progress + cost_inputs) + de) - fval) / dx;
   }
+  de = muDoubleScalarMax(1.0E-6, muDoubleScalarAbs(x[50])) * 1.0E-6;
+  /*  Unpack */
   /*  weights is fed in as an array of  */
   /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
    * sofConstraints] */
   cost_progress = 0.0;
   for (idx_mat = 0; idx_mat < 11; idx_mat++) {
     /*  Rotation matrix for transforming to the vehicle's local frame */
-    cost_inputs = -X[idx_mat + 22];
-    R_tmp = cost_inputs;
+    R_tmp_tmp = -X[idx_mat + 22];
+    R_tmp = R_tmp_tmp;
     b_sind(&R_tmp);
-    b_cosd(&cost_inputs);
-    f_obj_next_next_next_next_next_ =
-        e_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
-        X[idx_mat];
+    b_cosd(&R_tmp_tmp);
     g_obj_next_next_next_next_next_ =
-        e_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
+        X[idx_mat];
+    h_obj_next_next_next_next_next_ =
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
         X[idx_mat + 11];
-    target_relative_idx_0 = cost_inputs * f_obj_next_next_next_next_next_ +
-                            -R_tmp * g_obj_next_next_next_next_next_;
-    d = R_tmp * f_obj_next_next_next_next_next_ +
-        cost_inputs * g_obj_next_next_next_next_next_;
+    target_relative_idx_0 = R_tmp_tmp * g_obj_next_next_next_next_next_ +
+                            -R_tmp * h_obj_next_next_next_next_next_;
+    d = R_tmp * g_obj_next_next_next_next_next_ +
+        R_tmp_tmp * h_obj_next_next_next_next_next_;
     cost_progress +=
         (target_relative_idx_0 *
-             e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
-         d * e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[5]) *
+             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
+         d * f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[5]) *
             target_relative_idx_0 +
         (target_relative_idx_0 *
-             e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
-         d * e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[7]) *
+             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
+         d * f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[7]) *
             d;
   }
   /*  quadratic cost for inputs */
   cost_inputs = 0.0;
-  d = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
-  d1 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
-  d2 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
-  d3 = e_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
+  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
+  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
+  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
+  d3 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
   for (idx_mat = 0; idx_mat < 11; idx_mat++) {
-    f_obj_next_next_next_next_next_ = U[idx_mat + 11];
-    R_tmp = U[idx_mat];
-    cost_inputs += (R_tmp * d + f_obj_next_next_next_next_next_ * d1) * R_tmp +
-                   (R_tmp * d2 + f_obj_next_next_next_next_next_ * d3) *
-                       f_obj_next_next_next_next_next_;
+    R_tmp = U[idx_mat + 11];
+    R_tmp_tmp = U[idx_mat];
+    cost_inputs += (R_tmp_tmp * d + R_tmp * d1) * R_tmp_tmp +
+                   (R_tmp_tmp * d2 + R_tmp * d3) * R_tmp;
   }
-  cost_inputs += cost_progress;
+  /*  Unpack */
+  /*  weights is fed in as an array of  */
+  /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
+   * sofConstraints] */
+  b_cost_progress = 0.0;
+  for (idx_mat = 0; idx_mat < 11; idx_mat++) {
+    /*  Rotation matrix for transforming to the vehicle's local frame */
+    R_tmp_tmp = -X[idx_mat + 22];
+    R_tmp = R_tmp_tmp;
+    b_sind(&R_tmp);
+    b_cosd(&R_tmp_tmp);
+    g_obj_next_next_next_next_next_ =
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
+        X[idx_mat];
+    h_obj_next_next_next_next_next_ =
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
+        X[idx_mat + 11];
+    target_relative_idx_0 = R_tmp_tmp * g_obj_next_next_next_next_next_ +
+                            -R_tmp * h_obj_next_next_next_next_next_;
+    d = R_tmp * g_obj_next_next_next_next_next_ +
+        R_tmp_tmp * h_obj_next_next_next_next_next_;
+    b_cost_progress +=
+        (target_relative_idx_0 *
+             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
+         d * f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[5]) *
+            target_relative_idx_0 +
+        (target_relative_idx_0 *
+             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
+         d * f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[7]) *
+            d;
+  }
+  /*  quadratic cost for inputs */
+  dx = 0.0;
+  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
+  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
+  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
+  d3 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
+  for (idx_mat = 0; idx_mat < 11; idx_mat++) {
+    R_tmp = U[idx_mat + 11];
+    R_tmp_tmp = U[idx_mat];
+    dx += (R_tmp_tmp * d + R_tmp * d1) * R_tmp_tmp +
+          (R_tmp_tmp * d2 + R_tmp * d3) * R_tmp;
+  }
   for (idx_current = 0; idx_current < 10; idx_current++) {
     d = 0.0;
     for (col = 0; col < 20; col++) {
@@ -399,8 +439,13 @@ real_T evalObjAndConstrAndDerivatives(
   memcpy(&varargout_2[0], &b_x[0], 40U * sizeof(real_T));
   memcpy(&varargout_2[40], &b_dv[0], 10U * sizeof(real_T));
   varargout_2[50] =
-      (cost_inputs - cost_inputs) /
-      (2.0 * (muDoubleScalarMax(1.0E-6, muDoubleScalarAbs(x[50])) * 1.0E-6));
+      (((cost_progress + cost_inputs) +
+        (x[50] + de) *
+            f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1]) -
+       ((b_cost_progress + dx) +
+        (x[50] - de) *
+            f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1])) /
+      (2.0 * de);
   for (idx_current = 0; idx_current < 51; idx_current++) {
     grad_workspace_data[idx_current] = varargout_2[idx_current];
   }
@@ -442,8 +487,10 @@ real_T evalObjAndConstrAndDerivatives(
           d_obj_next_next_next_next_next_->OutputMin,
           d_obj_next_next_next_next_next_->OutputMax,
           d_obj_next_next_next_next_next_->Parameters.f1,
-          d_obj_next_next_next_next_next_->Parameters.f2, x, varargout_1, b_x,
-          varargout_3, varargout_4);
+          d_obj_next_next_next_next_next_->Parameters.f2,
+          d_obj_next_next_next_next_next_->Parameters.f5,
+          e_obj_next_next_next_next_next_->PredictionHorizon, x, varargout_1,
+          b_x, varargout_3, varargout_4);
       grad_workspace_data = varargout_3->data;
       varargout_1_data = varargout_1->data;
       n_t = (ptrdiff_t)c_obj_next_next_next_next_next_;
@@ -474,8 +521,10 @@ real_T evalObjAndConstrAndDerivatives(
           d_obj_next_next_next_next_next_->OutputMin,
           d_obj_next_next_next_next_next_->OutputMax,
           d_obj_next_next_next_next_next_->Parameters.f1,
-          d_obj_next_next_next_next_next_->Parameters.f2, x, varargout_1, b_x,
-          varargout_3, varargout_4);
+          d_obj_next_next_next_next_next_->Parameters.f2,
+          d_obj_next_next_next_next_next_->Parameters.f5,
+          e_obj_next_next_next_next_next_->PredictionHorizon, x, varargout_1,
+          b_x, varargout_3, varargout_4);
       memcpy(&Ceq_workspace[eq0 + -1], &b_x[0], 40U * sizeof(real_T));
       for (col_end = 0; col_end < 51; col_end++) {
         for (idx_mat = 0; idx_mat < 40; idx_mat++) {

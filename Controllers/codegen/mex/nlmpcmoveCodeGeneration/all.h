@@ -21,6 +21,6 @@
 #include <string.h>
 
 /* Function Declarations */
-void all(const boolean_T x[20], boolean_T y[2]);
+void all(const boolean_T x[40], boolean_T y[4]);
 
 /* End of code generation (all.h) */

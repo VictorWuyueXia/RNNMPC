@@ -1,11 +1,7 @@
-function [J_state, J_input] = vehicleDynamics_Simple_Jacobian(state, input ,e, data, params)
+function [J_state, J_input] = vehicleDynamics_Simple_Jacobian(state, input, ...
+    Ts, L, waypoints, weights, limits)
 
     % Unpack
-    Ts=data.Ts;
-    L=params.L;
-    waypoints=params.waypoints;
-    weights=params.weight;
-
     % [x_pos, y_pos, yaw_direction, speed]
     x = state(1);
     y = state(2);

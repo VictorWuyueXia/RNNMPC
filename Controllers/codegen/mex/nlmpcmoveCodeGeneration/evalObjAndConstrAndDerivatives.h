@@ -25,7 +25,8 @@
 real_T evalObjAndConstrAndDerivatives(
     int32_T c_obj_next_next_next_next_next_,
     const i_struct_T *d_obj_next_next_next_next_next_,
-    const k_struct_T *e_obj_next_next_next_next_next_, const real_T x[51],
+    const j_struct_T *e_obj_next_next_next_next_next_,
+    const k_struct_T *f_obj_next_next_next_next_next_, const real_T x[51],
     emxArray_real_T *grad_workspace, emxArray_real_T *Cineq_workspace,
     int32_T ineq0, real_T Ceq_workspace[40], int32_T eq0,
     emxArray_real_T *JacIneqTrans_workspace, int32_T iJI_col, int32_T ldJI,

@@ -75,14 +75,14 @@ void emxCopyMatrix_real_T1(real_T dst[2], const real_T src[2])
   }
 }
 
-void emxCopyMatrix_real_T3(real_T dst[20], const real_T src[20])
-{
-  memcpy(&dst[0], &src[0], 20U * sizeof(real_T));
-}
-
-void emxCopyMatrix_real_T4(real_T dst[40], const real_T src[40])
+void emxCopyMatrix_real_T3(real_T dst[40], const real_T src[40])
 {
   memcpy(&dst[0], &src[0], 40U * sizeof(real_T));
+}
+
+void emxCopyMatrix_real_T4(real_T dst[20], const real_T src[20])
+{
+  memcpy(&dst[0], &src[0], 20U * sizeof(real_T));
 }
 
 void emxCopyStruct_struct_T(i_struct_T *dst, const i_struct_T *src)
@@ -91,17 +91,17 @@ void emxCopyStruct_struct_T(i_struct_T *dst, const i_struct_T *src)
   emxCopyMatrix_real_T1(dst->lastMV, src->lastMV);
   emxCopy_real_T(&dst->ref, &src->ref);
   emxCopyMatrix_real_T3(dst->OutputWeights, src->OutputWeights);
-  emxCopyMatrix_real_T3(dst->MVWeights, src->MVWeights);
-  emxCopyMatrix_real_T3(dst->MVRateWeights, src->MVRateWeights);
+  emxCopyMatrix_real_T4(dst->MVWeights, src->MVWeights);
+  emxCopyMatrix_real_T4(dst->MVRateWeights, src->MVRateWeights);
   dst->ECRWeight = src->ECRWeight;
   emxCopyMatrix_real_T3(dst->OutputMin, src->OutputMin);
   emxCopyMatrix_real_T3(dst->OutputMax, src->OutputMax);
-  emxCopyMatrix_real_T4(dst->StateMin, src->StateMin);
-  emxCopyMatrix_real_T4(dst->StateMax, src->StateMax);
-  emxCopyMatrix_real_T3(dst->MVMin, src->MVMin);
-  emxCopyMatrix_real_T3(dst->MVMax, src->MVMax);
-  emxCopyMatrix_real_T3(dst->MVRateMin, src->MVRateMin);
-  emxCopyMatrix_real_T3(dst->MVRateMax, src->MVRateMax);
+  emxCopyMatrix_real_T3(dst->StateMin, src->StateMin);
+  emxCopyMatrix_real_T3(dst->StateMax, src->StateMax);
+  emxCopyMatrix_real_T4(dst->MVMin, src->MVMin);
+  emxCopyMatrix_real_T4(dst->MVMax, src->MVMax);
+  emxCopyMatrix_real_T4(dst->MVRateMin, src->MVRateMin);
+  emxCopyMatrix_real_T4(dst->MVRateMax, src->MVRateMax);
   emxCopy_real_T(&dst->MVScaledTarget, &src->MVScaledTarget);
   dst->Parameters = src->Parameters;
 }
@@ -631,24 +631,20 @@ void emxInit_int32_T(emxArray_int32_T **pEmxArray, int32_T numDimensions)
   }
 }
 
-void emxInit_int8_T(emxArray_int8_T **pEmxArray, int32_T numDimensions)
+void emxInit_int8_T(emxArray_int8_T **pEmxArray)
 {
   emxArray_int8_T *emxArray;
-  int32_T i;
   *pEmxArray = (emxArray_int8_T *)emlrtMallocEmxArray(sizeof(emxArray_int8_T));
   emlrtPushHeapReferenceStackEmxArray(
       emlrtRootTLSGlobal, false, (void *)pEmxArray, (void *)&emxFree_int8_T,
       NULL, NULL, NULL);
   emxArray = *pEmxArray;
   emxArray->data = (int8_T *)NULL;
-  emxArray->numDimensions = numDimensions;
-  emxArray->size =
-      (int32_T *)emlrtMallocMex(sizeof(int32_T) * (uint32_T)numDimensions);
+  emxArray->numDimensions = 1;
+  emxArray->size = (int32_T *)emlrtMallocMex(sizeof(int32_T));
   emxArray->allocatedSize = 0;
   emxArray->canFreeData = true;
-  for (i = 0; i < numDimensions; i++) {
-    emxArray->size[i] = 0;
-  }
+  emxArray->size[0] = 0;
 }
 
 void emxInit_ptrdiff_t(emxArray_ptrdiff_t **pEmxArray)

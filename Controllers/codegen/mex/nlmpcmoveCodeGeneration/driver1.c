@@ -241,6 +241,8 @@ void b_driver(const emxArray_real_T *bineq, const real_T lb[51],
             FcnEvaluator->next.next.next.next.next.value,
             &FcnEvaluator->next.next.next.next.next.next.next.value.workspace
                  .runtimedata,
+            &FcnEvaluator->next.next.next.next.next.next.next.value.workspace
+                 .userdata,
             &FcnEvaluator->next.next.next.next.next.next.next.next.value
                  .workspace,
             TrialState->xstarsqp, TrialState->cIneq, TrialState->iNonIneq0,
@@ -364,6 +366,8 @@ void b_driver(const emxArray_real_T *bineq, const real_T lb[51],
                     FcnEvaluator->next.next.next.next.next.value,
                     &FcnEvaluator->next.next.next.next.next.next.next.value
                          .workspace.runtimedata,
+                    &FcnEvaluator->next.next.next.next.next.next.next.value
+                         .workspace.userdata,
                     &FcnEvaluator->next.next.next.next.next.next.next.next.value
                          .workspace,
                     TrialState->xstarsqp, TrialState->cIneq,
@@ -443,6 +447,8 @@ void b_driver(const emxArray_real_T *bineq, const real_T lb[51],
           FcnEvaluator->next.next.next.next.next.value,
           &FcnEvaluator->next.next.next.next.next.next.next.value.workspace
                .runtimedata,
+          &FcnEvaluator->next.next.next.next.next.next.next.value.workspace
+               .userdata,
           &FcnEvaluator->next.next.next.next.next.next.next.next.value
                .workspace,
           TrialState->xstarsqp, TrialState->grad, TrialState->cIneq,

@@ -24,8 +24,8 @@ emxInitStruct_struct_T3
 emxInitStruct_struct_T
 emxInitStruct_struct_T1
 emxCopyStruct_struct_T
-emxCopyMatrix_real_T4
 emxCopyMatrix_real_T3
+emxCopyMatrix_real_T4
 emxCopyStruct_struct_T1
 emxCopyMatrix_real_T
 emxCopy_real_T
@@ -39,10 +39,10 @@ emxInit_boolean_T
 emxEnsureCapacity_boolean_T
 emxInit_int32_T
 emxEnsureCapacity_int32_T
-emxInit_real_T
 emxInit_int8_T
 emxEnsureCapacity_int8_T
 emxFree_int8_T
+emxInit_real_T
 emxInit_ptrdiff_t
 emxEnsureCapacity_ptrdiff_t
 emxFree_ptrdiff_t

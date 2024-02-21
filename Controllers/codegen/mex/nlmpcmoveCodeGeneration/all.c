@@ -15,14 +15,16 @@
 #include <string.h>
 
 /* Function Definitions */
-void all(const boolean_T x[20], boolean_T y[2])
+void all(const boolean_T x[40], boolean_T y[4])
 {
   int32_T i;
   int32_T i2;
   y[0] = true;
   y[1] = true;
+  y[2] = true;
+  y[3] = true;
   i2 = 1;
-  for (i = 0; i < 2; i++) {
+  for (i = 0; i < 4; i++) {
     int32_T a;
     int32_T ix;
     boolean_T exitg1;

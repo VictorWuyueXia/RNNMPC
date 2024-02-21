@@ -42,9 +42,9 @@ void emxCopyMatrix_real_T(real_T dst[4], const real_T src[4]);
 
 void emxCopyMatrix_real_T1(real_T dst[2], const real_T src[2]);
 
-void emxCopyMatrix_real_T3(real_T dst[20], const real_T src[20]);
+void emxCopyMatrix_real_T3(real_T dst[40], const real_T src[40]);
 
-void emxCopyMatrix_real_T4(real_T dst[40], const real_T src[40]);
+void emxCopyMatrix_real_T4(real_T dst[20], const real_T src[20]);
 
 void emxCopyStruct_struct_T(i_struct_T *dst, const i_struct_T *src);
 
@@ -122,7 +122,7 @@ void emxInit_boolean_T(emxArray_boolean_T **pEmxArray);
 
 void emxInit_int32_T(emxArray_int32_T **pEmxArray, int32_T numDimensions);
 
-void emxInit_int8_T(emxArray_int8_T **pEmxArray, int32_T numDimensions);
+void emxInit_int8_T(emxArray_int8_T **pEmxArray);
 
 void emxInit_ptrdiff_t(emxArray_ptrdiff_t **pEmxArray);
 
