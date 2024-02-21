@@ -1,4 +1,10 @@
-function cost = mpcCostFunction(x, u, y, e, Ts, L, waypoints, weights)
+function cost = mpcCostFunction(x, u ,e, data, params)
+
+    % Unpack
+    Ts=data.Ts;
+    L=params.L;
+    waypoints=params.waypoints;
+    weights=params.weight;
     
     % weights is fed in as an array of 
     % [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL sofConstraints]

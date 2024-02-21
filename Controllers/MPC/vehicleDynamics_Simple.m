@@ -1,7 +1,12 @@
-function nextState = vehicleDynamics_Simple(state, input, ...
-    Ts, L, waypoints, weights)
+function nextState = vehicleDynamics_Simple(state, input, e, data, params)
 
-    % Unpack the state and input
+    % Unpack
+    Ts=data.Ts;
+    L=params.L;
+    waypoints=params.waypoints;
+    weights=params.weight;
+
+
     % [x_pos, y_pos, yaw_direction, speed]
     x = state(1);
     y = state(2);
