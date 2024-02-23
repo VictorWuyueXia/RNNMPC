@@ -39,9 +39,8 @@ function constraints = inequalityConstraints(X, U, e, data, ...
     %% StateRate
     yawRate=deg2rad(diff(yaw))/Ts;
     turnRadius=abs(v(2:N+1)./yawRate); % r=v/omega
-    turnRadius(isnan(turnRadius))=0;% in case yawRate==0
-    linearAcc=diff(v);
-    centriAcc=linearAcc.*2./turnRadius; % a=v^2/r
+    turnRadius(isnan(turnRadius))=1e3;% in case yawRate==0
+    centriAcc=v(2:N+1).*2./turnRadius; % a=v^2/r
     centriAcc(isnan(centriAcc))=0;% in case turnRadius==0
     % totalAcc=(centriAcc.^2 + linearAcc.^2).*0.5; % a=sqrt(al^2+ar^2)
     
@@ -53,9 +52,8 @@ function constraints = inequalityConstraints(X, U, e, data, ...
 
     %% Input 
     % [acc steer(deg)]
-    
-    inputCon=[linearAcc-accMax; % linear acc
-        -brakeMax-linearAcc;
+    inputCon=[acc-accMax; % linear acc
+        -brakeMax-acc;
         abs(steer(1:N))-steerMax]; % steer
 
     %% InputRate
