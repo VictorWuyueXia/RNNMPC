@@ -13,7 +13,7 @@ function waypoints = waypointsTruncation(pos, vel, waypoints)
     % Passed waypoints are either within 1m of the ego car
     % or 1second away of the ego car
     perimeter=norm(vel.*1);
-    perimeter=min(1,perimeter);
+    perimeter=max(1,perimeter);
     
     if size(waypoints,1) > 1
         if distance<perimeter && ~isnan(waypoints(2,1))
