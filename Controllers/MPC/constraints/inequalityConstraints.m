@@ -10,11 +10,12 @@ function constraints = inequalityConstraints(X, U, e, data, ...
     
     % [speedMAX accMAX jerkMAX brakeMAX turnAngleMAX turnAngleRateMAX]
     speedMax=limits(1);
-    accMax=limits(2);
-    jerkMax=limits(3);
-    brakeMax=limits(4);
-    steerMax=limits(5);
-    steerRateMax=limits(6);
+    reverseMax=limits(2);
+    accMax=limits(3);
+    jerkMax=limits(4);
+    brakeMax=limits(5);
+    steerMax=limits(6);
+    steerRateMax=limits(7);
 
     % Xs are PredictionHorizon rows and 4 columns
     % The first row is the current X, which cannot be changed
@@ -34,7 +35,8 @@ function constraints = inequalityConstraints(X, U, e, data, ...
     %% State 
     % [x y yaw speed(v)]
 
-    stateCon=[abs(v(2:N+1))-speedMax-e]; % speed
+    stateCon=[v(2:N+1)-speedMax-e;
+        -v(2:N+1)-reverseMax+e]; % speed
     
     %% StateRate
     yawRate=deg2rad(diff(yaw))/Ts;

@@ -4,7 +4,7 @@ function cost = mpcCostFunction(X, U ,e, data, ...
     % Unpack
     % weights is fed in as an array of 
     % [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL sofConstraints]
-    cost_progress=progress_costFunc(X, waypoints, weights(1:2,3:4));
+    cost_progress=progress_costFunc(X, waypoints, weights(1,3));
     cost_inputs=input_costFunc(U, weights(1:2,1:2));
     cost_obstacleAvoidance=0;
     cost_laneKeeping=0;
