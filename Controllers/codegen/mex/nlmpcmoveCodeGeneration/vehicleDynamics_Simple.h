@@ -3,9 +3,9 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * tand.h
+ * vehicleDynamics_Simple.h
  *
- * Code generation for function 'tand'
+ * Code generation for function 'vehicleDynamics_Simple'
  *
  */
 
@@ -21,6 +21,7 @@
 #include <string.h>
 
 /* Function Declarations */
-void b_tand(real_T *x);
+void vehicleDynamics_Simple(const real_T state[4], const real_T input[2],
+                            real_T Ts, real_T L, real_T nextState[4]);
 
-/* End of code generation (tand.h) */
+/* End of code generation (vehicleDynamics_Simple.h) */

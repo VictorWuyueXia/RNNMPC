@@ -12,15 +12,14 @@
 /* Include files */
 #include "nlmpcmoveCodeGeneration.h"
 #include "all.h"
-#include "cosd.h"
 #include "fmincon.h"
 #include "inequalityConstraints.h"
+#include "mpcCostFunction.h"
 #include "nlmpcmoveCodeGeneration_data.h"
 #include "nlmpcmoveCodeGeneration_emxutil.h"
 #include "nlmpcmoveCodeGeneration_types.h"
 #include "rt_nonfinite.h"
-#include "sind.h"
-#include "tand.h"
+#include "vehicleDynamics_Simple.h"
 #include "znlmpc_computeJacobianIneq.h"
 #include "znlmpc_reformJacobian.h"
 #include "blas.h"
@@ -33,12 +32,12 @@
 void c_nlmpcmoveCodeGeneration_anonF(
     const real_T runtimedata_x[4], const real_T runtimedata_OutputMin[40],
     const real_T runtimedata_OutputMax[40], real_T runtimedata_Parameters_f1,
-    real_T runtimedata_Parameters_f2, const real_T runtimedata_Parameters_f5[6],
+    real_T runtimedata_Parameters_f2, const real_T runtimedata_Parameters_f5[7],
     real_T userdata_PredictionHorizon, const real_T z[51],
     emxArray_real_T *varargout_1, real_T varargout_2[40],
     emxArray_real_T *varargout_3, real_T varargout_4[2040])
 {
-  static const int8_T b_iv[4] = {0, 0, 0, 1};
+  __m128d r;
   __m128d r2;
   ptrdiff_t k_t;
   ptrdiff_t lda_t;
@@ -46,7 +45,7 @@ void c_nlmpcmoveCodeGeneration_anonF(
   ptrdiff_t ldc_t;
   ptrdiff_t m_t;
   ptrdiff_t n_t;
-  emxArray_int8_T *r;
+  emxArray_int8_T *r1;
   emxArray_real_T *Jc;
   emxArray_real_T *Jcu;
   emxArray_real_T *Ju;
@@ -69,15 +68,19 @@ void c_nlmpcmoveCodeGeneration_anonF(
   real_T a[20];
   real_T Ck[16];
   real_T val[16];
-  real_T alpha1;
-  real_T beta1;
+  real_T b_val[8];
+  real_T b_f[4];
+  real_T xa[4];
+  real_T xk[4];
+  real_T xk1[4];
+  real_T b_uk_tmp;
   real_T d;
-  real_T d1;
-  real_T d2;
-  real_T d3;
-  real_T d4;
+  real_T du;
   real_T dx;
   real_T e;
+  real_T ua_idx_0;
+  real_T ua_idx_1;
+  real_T uk_tmp;
   real_T *Jc_data;
   real_T *Jcu_data;
   real_T *b_c_data;
@@ -88,6 +91,7 @@ void c_nlmpcmoveCodeGeneration_anonF(
   int32_T b_i;
   int32_T b_input_sizes_idx_1;
   int32_T i;
+  int32_T icf_tmp;
   int32_T input_sizes_idx_0;
   int32_T input_sizes_idx_1;
   int32_T j;
@@ -100,7 +104,7 @@ void c_nlmpcmoveCodeGeneration_anonF(
   int8_T i2;
   int8_T i3;
   int8_T i4;
-  int8_T *r1;
+  int8_T *r5;
   boolean_T bv[40];
   boolean_T x[4];
   boolean_T b_y;
@@ -116,21 +120,21 @@ void c_nlmpcmoveCodeGeneration_anonF(
   memset(&Umv[0], 0, 22U * sizeof(real_T));
   for (i = 0; i < 20; i++) {
     d = 0.0;
-    for (nf = 0; nf < 10; nf++) {
-      d += (real_T)iv[i + 20 * nf] * z[nf + 40];
+    for (icf_tmp = 0; icf_tmp < 10; icf_tmp++) {
+      d += (real_T)iv[i + 20 * icf_tmp] * z[icf_tmp + 40];
     }
     a[i] = d;
   }
   for (i = 0; i < 2; i++) {
-    for (nf = 0; nf < 10; nf++) {
-      Umv[nf + 11 * i] = a[i + (nf << 1)];
+    for (icf_tmp = 0; icf_tmp < 10; icf_tmp++) {
+      Umv[icf_tmp + 11 * i] = a[i + (icf_tmp << 1)];
     }
   }
   e = z[50];
   memcpy(&b_z[0], &z[0], 40U * sizeof(real_T));
   for (i = 0; i < 4; i++) {
-    for (nf = 0; nf < 10; nf++) {
-      X[(nf + 11 * i) + 1] = b_z[i + (nf << 2)];
+    for (icf_tmp = 0; icf_tmp < 10; icf_tmp++) {
+      X[(icf_tmp + 11 * i) + 1] = b_z[i + (icf_tmp << 2)];
     }
     X[11 * i] = runtimedata_x[i];
   }
@@ -157,95 +161,134 @@ void c_nlmpcmoveCodeGeneration_anonF(
     b_X[input_sizes_idx_0 + 2] = X[i + 22];
     b_X[input_sizes_idx_0 + 3] = X[i + 33];
   }
+  r = _mm_set1_pd(-1.0);
   for (b_i = 0; b_i < 10; b_i++) {
-    real_T b_val[8];
-    /*  Unpack */
-    /*  [x_pos, y_pos, yaw_direction, speed] */
-    /*  Pre-computed J_state expression */
-    i = b_i << 2;
-    d = b_X[i + 2];
-    alpha1 = d;
-    b_cosd(&alpha1);
-    beta1 = d;
-    b_sind(&beta1);
-    nf = b_i << 1;
-    d1 = Umv[nf + 1];
-    dx = d1;
-    b_tand(&dx);
-    /*  Pre-computed J_input expression */
-    /*  Unpack */
-    /*  [x_pos, y_pos, yaw_direction, speed] */
-    /*  Vehicle dynamics equations - continuous */
-    /*  Euler's method */
-    /*  Return the next state */
-    d2 = d;
-    b_cosd(&d2);
-    d3 = d;
-    b_sind(&d3);
-    b_tand(&d1);
-    d4 = b_X[i + 3];
+    __m128d r3;
+    __m128d r4;
+    real_T uk[2];
+    input_sizes_idx_1 = b_i << 1;
+    uk_tmp = Umv[input_sizes_idx_1];
+    b_uk_tmp = Umv[input_sizes_idx_1 + 1];
+    uk[1] = b_uk_tmp;
+    input_sizes_idx_0 = b_i << 2;
+    vehicleDynamics_Simple(&b_X[input_sizes_idx_0], &Umv[input_sizes_idx_1],
+                           runtimedata_Parameters_f1, runtimedata_Parameters_f2,
+                           xk1);
+    d = b_X[input_sizes_idx_0];
+    xk[0] = d;
+    xa[0] = muDoubleScalarAbs(d);
+    d = b_X[input_sizes_idx_0 + 1];
+    xk[1] = d;
+    xa[1] = muDoubleScalarAbs(d);
+    d = b_X[input_sizes_idx_0 + 2];
+    xk[2] = d;
+    xa[2] = muDoubleScalarAbs(d);
+    d = b_X[input_sizes_idx_0 + 3];
+    xk[3] = d;
+    xa[3] = muDoubleScalarAbs(d);
+    if (xa[0] < 1.0) {
+      xa[0] = 1.0;
+    }
+    if (xa[1] < 1.0) {
+      xa[1] = 1.0;
+    }
+    if (xa[2] < 1.0) {
+      xa[2] = 1.0;
+    }
+    if (xa[3] < 1.0) {
+      xa[3] = 1.0;
+    }
+    for (j = 0; j < 4; j++) {
+      dx = 1.0E-6 * xa[j];
+      xk[j] += dx;
+      vehicleDynamics_Simple(xk, &Umv[input_sizes_idx_1],
+                             runtimedata_Parameters_f1,
+                             runtimedata_Parameters_f2, b_f);
+      xk[j] -= dx;
+      r2 = _mm_loadu_pd(&b_f[0]);
+      r3 = _mm_loadu_pd(&xk1[0]);
+      i = j << 2;
+      r4 = _mm_set1_pd(dx);
+      _mm_storeu_pd(&val[i], _mm_div_pd(_mm_sub_pd(r2, r3), r4));
+      r2 = _mm_loadu_pd(&b_f[2]);
+      r3 = _mm_loadu_pd(&xk1[2]);
+      _mm_storeu_pd(&val[i + 2], _mm_div_pd(_mm_sub_pd(r2, r3), r4));
+    }
+    ua_idx_0 = muDoubleScalarAbs(uk_tmp);
+    ua_idx_1 = muDoubleScalarAbs(b_uk_tmp);
+    if (ua_idx_0 < 1.0) {
+      ua_idx_0 = 1.0;
+    }
+    if (ua_idx_1 < 1.0) {
+      ua_idx_1 = 1.0;
+    }
+    du = 1.0E-6 * ua_idx_0;
+    uk[0] = uk_tmp + du;
+    vehicleDynamics_Simple(xk, uk, runtimedata_Parameters_f1,
+                           runtimedata_Parameters_f2, b_f);
+    uk[0] -= du;
+    r2 = _mm_loadu_pd(&b_f[0]);
+    r3 = _mm_loadu_pd(&xk1[0]);
+    r4 = _mm_set1_pd(du);
+    _mm_storeu_pd(&b_val[0], _mm_div_pd(_mm_sub_pd(r2, r3), r4));
+    r2 = _mm_loadu_pd(&b_f[2]);
+    r3 = _mm_loadu_pd(&xk1[2]);
+    _mm_storeu_pd(&b_val[2], _mm_div_pd(_mm_sub_pd(r2, r3), r4));
+    du = 1.0E-6 * ua_idx_1;
+    uk[1] = b_uk_tmp + du;
+    vehicleDynamics_Simple(xk, uk, runtimedata_Parameters_f1,
+                           runtimedata_Parameters_f2, b_f);
+    r2 = _mm_loadu_pd(&b_f[0]);
+    r3 = _mm_loadu_pd(&xk1[0]);
+    r4 = _mm_set1_pd(du);
+    _mm_storeu_pd(&b_val[4], _mm_div_pd(_mm_sub_pd(r2, r3), r4));
+    r2 = _mm_loadu_pd(&b_f[2]);
+    r3 = _mm_loadu_pd(&xk1[2]);
+    _mm_storeu_pd(&b_val[6], _mm_div_pd(_mm_sub_pd(r2, r3), r4));
     input_sizes_idx_0 = (b_i + 1) << 2;
     i1 = ic[0];
-    varargout_2[ic[0] - 1] =
-        b_X[input_sizes_idx_0] - (b_X[i] + d4 * d2 * runtimedata_Parameters_f1);
+    varargout_2[ic[0] - 1] = b_X[input_sizes_idx_0] - xk1[0];
     Jx[(ic[0] + 160 * b_i) - 1] = 1.0;
     i2 = ic[1];
-    varargout_2[ic[1] - 1] = b_X[input_sizes_idx_0 + 1] -
-                             (b_X[i + 1] + d4 * d3 * runtimedata_Parameters_f1);
+    varargout_2[ic[1] - 1] = b_X[input_sizes_idx_0 + 1] - xk1[1];
     Jx[(ic[1] + 160 * b_i) + 39] = 1.0;
     i3 = ic[2];
-    varargout_2[ic[2] - 1] =
-        b_X[input_sizes_idx_0 + 2] -
-        (d + d4 * d1 / runtimedata_Parameters_f2 * runtimedata_Parameters_f1);
+    varargout_2[ic[2] - 1] = b_X[input_sizes_idx_0 + 2] - xk1[2];
     Jx[(ic[2] + 160 * b_i) + 79] = 1.0;
     i4 = ic[3];
-    varargout_2[ic[3] - 1] =
-        b_X[input_sizes_idx_0 + 3] - (d4 + Umv[nf] * runtimedata_Parameters_f1);
+    varargout_2[ic[3] - 1] = b_X[input_sizes_idx_0 + 3] - xk1[3];
     Jx[(ic[3] + 160 * b_i) + 119] = 1.0;
     if (b_i + 1 > 1) {
-      val[0] = -1.0;
-      val[4] = -0.0;
-      val[8] = -(-runtimedata_Parameters_f1 * d4 * beta1);
-      val[12] = -(runtimedata_Parameters_f1 * alpha1);
-      val[1] = -0.0;
-      val[5] = -1.0;
-      val[9] = -(runtimedata_Parameters_f1 * d4 * alpha1);
-      val[13] = -(runtimedata_Parameters_f1 * beta1);
-      val[2] = -0.0;
-      val[6] = -0.0;
-      val[10] = -1.0;
-      val[14] = -(runtimedata_Parameters_f1 * dx / runtimedata_Parameters_f2);
-      input_sizes_idx_0 = 160 * (b_i - 1);
-      for (b_input_sizes_idx_1 = 0; b_input_sizes_idx_1 < 4;
-           b_input_sizes_idx_1++) {
-        input_sizes_idx_1 = b_input_sizes_idx_1 << 2;
-        val[input_sizes_idx_1 + 3] = -(real_T)b_iv[b_input_sizes_idx_1];
-        Jx[((i1 + 40 * b_input_sizes_idx_1) + input_sizes_idx_0) - 1] =
-            val[input_sizes_idx_1];
-        Jx[((i2 + 40 * b_input_sizes_idx_1) + input_sizes_idx_0) - 1] =
-            val[input_sizes_idx_1 + 1];
-        Jx[((i3 + 40 * b_input_sizes_idx_1) + input_sizes_idx_0) - 1] =
-            val[input_sizes_idx_1 + 2];
-        Jx[((i4 + 40 * b_input_sizes_idx_1) + input_sizes_idx_0) - 1] =
-            val[input_sizes_idx_1 + 3];
+      for (i = 0; i <= 14; i += 2) {
+        r2 = _mm_loadu_pd(&val[i]);
+        _mm_storeu_pd(&val[i], _mm_mul_pd(r2, _mm_set1_pd(-1.0)));
+      }
+      input_sizes_idx_1 = 160 * (b_i - 1);
+      for (j = 0; j < 4; j++) {
+        input_sizes_idx_0 = j << 2;
+        Jx[((i1 + 40 * j) + input_sizes_idx_1) - 1] = val[input_sizes_idx_0];
+        Jx[((i2 + 40 * j) + input_sizes_idx_1) - 1] =
+            val[input_sizes_idx_0 + 1];
+        Jx[((i3 + 40 * j) + input_sizes_idx_1) - 1] =
+            val[input_sizes_idx_0 + 2];
+        Jx[((i4 + 40 * j) + input_sizes_idx_1) - 1] =
+            val[input_sizes_idx_0 + 3];
       }
     }
-    b_val[2] = -(runtimedata_Parameters_f1 * d4 * (dx * dx + 1.0) /
-                 runtimedata_Parameters_f2);
-    b_val[6] = -0.0;
-    b_val[3] = -0.0;
-    b_val[7] = -runtimedata_Parameters_f1;
-    for (b_input_sizes_idx_1 = 0; b_input_sizes_idx_1 < 2;
-         b_input_sizes_idx_1++) {
-      input_sizes_idx_1 = b_input_sizes_idx_1 << 2;
-      b_val[input_sizes_idx_1] = -0.0;
-      b_val[input_sizes_idx_1 + 1] = -0.0;
-      Jmv[((i1 + 40 * b_input_sizes_idx_1) + 80 * b_i) - 1] = -0.0;
-      Jmv[((i2 + 40 * b_input_sizes_idx_1) + 80 * b_i) - 1] = -0.0;
-      Jmv[((i3 + 40 * b_input_sizes_idx_1) + 80 * b_i) - 1] =
-          b_val[input_sizes_idx_1 + 2];
-      Jmv[((i4 + 40 * b_input_sizes_idx_1) + 80 * b_i) - 1] =
-          b_val[input_sizes_idx_1 + 3];
+    r2 = _mm_loadu_pd(&b_val[0]);
+    _mm_storeu_pd(&b_val[0], _mm_mul_pd(r2, r));
+    r2 = _mm_loadu_pd(&b_val[2]);
+    _mm_storeu_pd(&b_val[2], _mm_mul_pd(r2, r));
+    r2 = _mm_loadu_pd(&b_val[4]);
+    _mm_storeu_pd(&b_val[4], _mm_mul_pd(r2, r));
+    r2 = _mm_loadu_pd(&b_val[6]);
+    _mm_storeu_pd(&b_val[6], _mm_mul_pd(r2, r));
+    for (j = 0; j < 2; j++) {
+      input_sizes_idx_0 = j << 2;
+      Jmv[((i1 + 40 * j) + 80 * b_i) - 1] = b_val[input_sizes_idx_0];
+      Jmv[((i2 + 40 * j) + 80 * b_i) - 1] = b_val[input_sizes_idx_0 + 1];
+      Jmv[((i3 + 40 * j) + 80 * b_i) - 1] = b_val[input_sizes_idx_0 + 2];
+      Jmv[((i4 + 40 * j) + 80 * b_i) - 1] = b_val[input_sizes_idx_0 + 3];
     }
     ic[0] = (int8_T)(ic[0] + 4);
     ic[1] = (int8_T)(ic[1] + 4);
@@ -254,29 +297,29 @@ void c_nlmpcmoveCodeGeneration_anonF(
   }
   TRANSB1 = 'N';
   TRANSA1 = 'N';
-  alpha1 = 1.0;
-  beta1 = 0.0;
+  ua_idx_0 = 1.0;
+  du = 0.0;
   m_t = (ptrdiff_t)40;
   n_t = (ptrdiff_t)10;
   k_t = (ptrdiff_t)20;
   lda_t = (ptrdiff_t)40;
   ldb_t = (ptrdiff_t)20;
   ldc_t = (ptrdiff_t)40;
-  dgemm(&TRANSA1, &TRANSB1, &m_t, &n_t, &k_t, &alpha1, &Jmv[0], &lda_t,
-        (real_T *)&dv[0], &ldb_t, &beta1, &y[0], &ldc_t);
+  dgemm(&TRANSA1, &TRANSB1, &m_t, &n_t, &k_t, &ua_idx_0, &Jmv[0], &lda_t,
+        (real_T *)&dv[0], &ldb_t, &du, &y[0], &ldc_t);
   for (i = 0; i < 40; i++) {
     bv[i] = muDoubleScalarIsInf(runtimedata_OutputMin[i]);
   }
   all(bv, x);
   b_y = true;
-  b_input_sizes_idx_1 = 0;
+  j = 0;
   exitg1 = false;
-  while ((!exitg1) && (b_input_sizes_idx_1 <= 3)) {
-    if (!x[b_input_sizes_idx_1]) {
+  while ((!exitg1) && (j <= 3)) {
+    if (!x[j]) {
       b_y = false;
       exitg1 = true;
     } else {
-      b_input_sizes_idx_1++;
+      j++;
     }
   }
   emxInit_real_T(&b_c, 2);
@@ -284,7 +327,7 @@ void c_nlmpcmoveCodeGeneration_anonF(
   emxInit_real_T(&Jc, 2);
   Jc_data = Jc->data;
   emxInit_real_T(&Ju, 3);
-  emxInit_int8_T(&r);
+  emxInit_int8_T(&r1);
   emxInit_real_T(&b_Jx, 3);
   guard1 = false;
   if (b_y) {
@@ -293,14 +336,14 @@ void c_nlmpcmoveCodeGeneration_anonF(
     }
     all(bv, x);
     b_y = true;
-    b_input_sizes_idx_1 = 0;
+    j = 0;
     exitg1 = false;
-    while ((!exitg1) && (b_input_sizes_idx_1 <= 3)) {
-      if (!x[b_input_sizes_idx_1]) {
+    while ((!exitg1) && (j <= 3)) {
+      if (!x[j]) {
         b_y = false;
         exitg1 = true;
       } else {
-        b_input_sizes_idx_1++;
+        j++;
       }
     }
     if (b_y) {
@@ -328,34 +371,42 @@ void c_nlmpcmoveCodeGeneration_anonF(
     ic[2] = 3;
     ic[3] = 4;
     for (b_i = 0; b_i < 10; b_i++) {
+      int32_T b_icf_tmp;
       d = runtimedata_OutputMin[b_i];
       i1 = ic[0];
       icf[ic[0] - 1] = ((!muDoubleScalarIsInf(d)) && (!muDoubleScalarIsNaN(d)));
+      xk1[0] = (real_T)ic[0] + 4.0;
       d = runtimedata_OutputMin[b_i + 10];
       i2 = ic[1];
       icf[ic[1] - 1] = ((!muDoubleScalarIsInf(d)) && (!muDoubleScalarIsNaN(d)));
+      xk1[1] = (real_T)ic[1] + 4.0;
       d = runtimedata_OutputMin[b_i + 20];
       i3 = ic[2];
       icf[ic[2] - 1] = ((!muDoubleScalarIsInf(d)) && (!muDoubleScalarIsNaN(d)));
+      xk1[2] = (real_T)ic[2] + 4.0;
       d = runtimedata_OutputMin[b_i + 30];
       i4 = ic[3];
       icf[ic[3] - 1] = ((!muDoubleScalarIsInf(d)) && (!muDoubleScalarIsNaN(d)));
+      xk1[3] = (real_T)ic[3] + 4.0;
       d = runtimedata_OutputMax[b_i];
-      icf[(int8_T)(ic[0] + 4) - 1] =
+      b_input_sizes_idx_1 = (int32_T)xk1[0] - 1;
+      icf[b_input_sizes_idx_1] =
           ((!muDoubleScalarIsInf(d)) && (!muDoubleScalarIsNaN(d)));
       d = runtimedata_OutputMax[b_i + 10];
-      icf[(int8_T)(ic[1] + 4) - 1] =
-          ((!muDoubleScalarIsInf(d)) && (!muDoubleScalarIsNaN(d)));
-      d1 = runtimedata_OutputMax[b_i + 20];
-      icf[(int8_T)(ic[2] + 4) - 1] =
-          ((!muDoubleScalarIsInf(d1)) && (!muDoubleScalarIsNaN(d1)));
-      d2 = runtimedata_OutputMax[b_i + 30];
-      icf[(int8_T)(ic[3] + 4) - 1] =
-          ((!muDoubleScalarIsInf(d2)) && (!muDoubleScalarIsNaN(d2)));
+      nf = (int32_T)xk1[1] - 1;
+      icf[nf] = ((!muDoubleScalarIsInf(d)) && (!muDoubleScalarIsNaN(d)));
+      ua_idx_0 = runtimedata_OutputMax[b_i + 20];
+      icf_tmp = (int32_T)xk1[2] - 1;
+      icf[icf_tmp] = ((!muDoubleScalarIsInf(ua_idx_0)) &&
+                      (!muDoubleScalarIsNaN(ua_idx_0)));
+      du = runtimedata_OutputMax[b_i + 30];
+      b_icf_tmp = (int32_T)xk1[3] - 1;
+      icf[b_icf_tmp] =
+          ((!muDoubleScalarIsInf(du)) && (!muDoubleScalarIsNaN(du)));
       b_y = false;
-      b_input_sizes_idx_1 = 0;
+      j = 0;
       exitg1 = false;
-      while ((!exitg1) && (b_input_sizes_idx_1 <= 7)) {
+      while ((!exitg1) && (j <= 7)) {
         int16_T b_ic[8];
         b_ic[0] = (int16_T)(i1 - 1);
         b_ic[4] = (int16_T)(ic[0] + 3);
@@ -365,28 +416,27 @@ void c_nlmpcmoveCodeGeneration_anonF(
         b_ic[6] = (int16_T)(ic[2] + 3);
         b_ic[3] = (int16_T)(i4 - 1);
         b_ic[7] = (int16_T)(ic[3] + 3);
-        if (icf[b_ic[b_input_sizes_idx_1]]) {
+        if (icf[b_ic[j]]) {
           b_y = true;
           exitg1 = true;
         } else {
-          b_input_sizes_idx_1++;
+          j++;
         }
       }
       if (b_y) {
-        real_T xa[4];
-        real_T xk[4];
-        d3 = X[b_i + 1];
-        xk[0] = d3;
-        xa[0] = muDoubleScalarAbs(d3);
-        d4 = X[b_i + 12];
-        xk[1] = d4;
-        xa[1] = muDoubleScalarAbs(d4);
-        alpha1 = X[b_i + 23];
-        xk[2] = alpha1;
-        xa[2] = muDoubleScalarAbs(alpha1);
-        beta1 = X[b_i + 34];
-        xk[3] = beta1;
-        xa[3] = muDoubleScalarAbs(beta1);
+        real_T d1;
+        ua_idx_1 = X[b_i + 1];
+        xk[0] = ua_idx_1;
+        xa[0] = muDoubleScalarAbs(ua_idx_1);
+        uk_tmp = X[b_i + 12];
+        xk[1] = uk_tmp;
+        xa[1] = muDoubleScalarAbs(uk_tmp);
+        b_uk_tmp = X[b_i + 23];
+        xk[2] = b_uk_tmp;
+        xa[2] = muDoubleScalarAbs(b_uk_tmp);
+        d1 = X[b_i + 34];
+        xk[3] = d1;
+        xa[3] = muDoubleScalarAbs(d1);
         if (xa[0] < 1.0) {
           xa[0] = 1.0;
         }
@@ -403,55 +453,45 @@ void c_nlmpcmoveCodeGeneration_anonF(
           dx = 1.0E-6 * xa[j];
           xk[j] += dx;
           input_sizes_idx_0 = j << 2;
-          Ck[input_sizes_idx_0] = (xk[0] - d3) / dx;
-          Ck[input_sizes_idx_0 + 1] = (xk[1] - d4) / dx;
-          Ck[input_sizes_idx_0 + 2] = (xk[2] - alpha1) / dx;
-          Ck[input_sizes_idx_0 + 3] = (xk[3] - beta1) / dx;
+          Ck[input_sizes_idx_0] = (xk[0] - ua_idx_1) / dx;
+          Ck[input_sizes_idx_0 + 1] = (xk[1] - uk_tmp) / dx;
+          Ck[input_sizes_idx_0 + 2] = (xk[2] - b_uk_tmp) / dx;
+          Ck[input_sizes_idx_0 + 3] = (xk[3] - d1) / dx;
           xk[j] -= dx;
           c_c[ic[j] - 1] =
               (runtimedata_OutputMin[b_i + 10 * j] - e) - X[(b_i + 11 * j) + 1];
         }
         i1 = ic[0];
-        c_c[ic[0] + 3] = (d3 - runtimedata_OutputMax[b_i]) - e;
+        c_c[ic[0] + 3] = (ua_idx_1 - runtimedata_OutputMax[b_i]) - e;
         i2 = ic[1];
-        c_c[ic[1] + 3] = (d4 - d) - e;
+        c_c[ic[1] + 3] = (uk_tmp - d) - e;
         i3 = ic[2];
-        c_c[ic[2] + 3] = (alpha1 - d1) - e;
+        c_c[ic[2] + 3] = (b_uk_tmp - ua_idx_0) - e;
         i4 = ic[3];
-        c_c[ic[3] + 3] = (beta1 - d2) - e;
+        c_c[ic[3] + 3] = (d1 - du) - e;
         for (i = 0; i <= 14; i += 2) {
-          r2 = _mm_loadu_pd(&Ck[i]);
-          _mm_storeu_pd(&val[i], _mm_mul_pd(r2, _mm_set1_pd(-1.0)));
+          r = _mm_loadu_pd(&Ck[i]);
+          _mm_storeu_pd(&val[i], _mm_mul_pd(r, _mm_set1_pd(-1.0)));
         }
-        for (b_input_sizes_idx_1 = 0; b_input_sizes_idx_1 < 4;
-             b_input_sizes_idx_1++) {
-          input_sizes_idx_0 = b_input_sizes_idx_1 << 2;
-          c_Jx[((i1 + 80 * b_input_sizes_idx_1) + 320 * b_i) - 1] =
-              val[input_sizes_idx_0];
-          c_Jx[((i2 + 80 * b_input_sizes_idx_1) + 320 * b_i) - 1] =
-              val[input_sizes_idx_0 + 1];
-          c_Jx[((i3 + 80 * b_input_sizes_idx_1) + 320 * b_i) - 1] =
-              val[input_sizes_idx_0 + 2];
-          c_Jx[((i4 + 80 * b_input_sizes_idx_1) + 320 * b_i) - 1] =
-              val[input_sizes_idx_0 + 3];
+        for (j = 0; j < 4; j++) {
+          input_sizes_idx_1 = j << 2;
+          c_Jx[((i1 + 80 * j) + 320 * b_i) - 1] = val[input_sizes_idx_1];
+          c_Jx[((i2 + 80 * j) + 320 * b_i) - 1] = val[input_sizes_idx_1 + 1];
+          c_Jx[((i3 + 80 * j) + 320 * b_i) - 1] = val[input_sizes_idx_1 + 2];
+          c_Jx[((i4 + 80 * j) + 320 * b_i) - 1] = val[input_sizes_idx_1 + 3];
         }
-        for (b_input_sizes_idx_1 = 0; b_input_sizes_idx_1 < 4;
-             b_input_sizes_idx_1++) {
-          input_sizes_idx_0 = b_input_sizes_idx_1 << 2;
-          c_Jx[((ic[0] + 80 * b_input_sizes_idx_1) + 320 * b_i) + 3] =
-              Ck[input_sizes_idx_0];
-          c_Jx[((ic[1] + 80 * b_input_sizes_idx_1) + 320 * b_i) + 3] =
-              Ck[input_sizes_idx_0 + 1];
-          c_Jx[((ic[2] + 80 * b_input_sizes_idx_1) + 320 * b_i) + 3] =
-              Ck[input_sizes_idx_0 + 2];
-          c_Jx[((ic[3] + 80 * b_input_sizes_idx_1) + 320 * b_i) + 3] =
-              Ck[input_sizes_idx_0 + 3];
-          Je[ic[b_input_sizes_idx_1] - 1] = -1;
+        for (j = 0; j < 4; j++) {
+          input_sizes_idx_1 = j << 2;
+          c_Jx[((ic[0] + 80 * j) + 320 * b_i) + 3] = Ck[input_sizes_idx_1];
+          c_Jx[((ic[1] + 80 * j) + 320 * b_i) + 3] = Ck[input_sizes_idx_1 + 1];
+          c_Jx[((ic[2] + 80 * j) + 320 * b_i) + 3] = Ck[input_sizes_idx_1 + 2];
+          c_Jx[((ic[3] + 80 * j) + 320 * b_i) + 3] = Ck[input_sizes_idx_1 + 3];
+          Je[ic[j] - 1] = -1;
         }
-        Je[(int8_T)(ic[0] + 4) - 1] = -1;
-        Je[(int8_T)(ic[1] + 4) - 1] = -1;
-        Je[(int8_T)(ic[2] + 4) - 1] = -1;
-        Je[(int8_T)(ic[3] + 4) - 1] = -1;
+        Je[b_input_sizes_idx_1] = -1;
+        Je[nf] = -1;
+        Je[icf_tmp] = -1;
+        Je[b_icf_tmp] = -1;
       }
       ic[0] = (int8_T)(ic[0] + 8);
       ic[1] = (int8_T)(ic[1] + 8);
@@ -464,74 +504,74 @@ void c_nlmpcmoveCodeGeneration_anonF(
         input_sizes_idx_0++;
       }
     }
-    i = r->size[0];
-    r->size[0] = input_sizes_idx_0;
-    emxEnsureCapacity_int8_T(r, i);
-    r1 = r->data;
+    i = r1->size[0];
+    r1->size[0] = input_sizes_idx_0;
+    emxEnsureCapacity_int8_T(r1, i);
+    r5 = r1->data;
     input_sizes_idx_0 = 0;
     for (b_i = 0; b_i < 80; b_i++) {
       if (icf[b_i]) {
-        r1[input_sizes_idx_0] = (int8_T)b_i;
+        r5[input_sizes_idx_0] = (int8_T)b_i;
         input_sizes_idx_0++;
       }
     }
     i = c->size[0];
-    c->size[0] = r->size[0];
+    c->size[0] = r1->size[0];
     emxEnsureCapacity_real_T(c, i);
     b_c_data = c->data;
-    input_sizes_idx_0 = r->size[0];
+    input_sizes_idx_0 = r1->size[0];
     for (i = 0; i < input_sizes_idx_0; i++) {
-      b_c_data[i] = c_c[r1[i]];
+      b_c_data[i] = c_c[r5[i]];
     }
     i = b_c->size[0] * b_c->size[1];
-    b_c->size[0] = r->size[0];
+    b_c->size[0] = r1->size[0];
     b_c->size[1] = 1;
     emxEnsureCapacity_real_T(b_c, i);
     c_data = b_c->data;
-    input_sizes_idx_0 = r->size[0];
+    input_sizes_idx_0 = r1->size[0];
     for (i = 0; i < input_sizes_idx_0; i++) {
       c_data[i] = b_c_data[i];
     }
     i = b_Jx->size[0] * b_Jx->size[1] * b_Jx->size[2];
-    b_Jx->size[0] = r->size[0];
+    b_Jx->size[0] = r1->size[0];
     b_Jx->size[1] = 4;
     b_Jx->size[2] = 10;
     emxEnsureCapacity_real_T(b_Jx, i);
     Jcu_data = b_Jx->data;
-    input_sizes_idx_0 = r->size[0];
+    input_sizes_idx_0 = r1->size[0];
     for (i = 0; i < 10; i++) {
-      for (nf = 0; nf < 4; nf++) {
+      for (icf_tmp = 0; icf_tmp < 4; icf_tmp++) {
         for (input_sizes_idx_1 = 0; input_sizes_idx_1 < input_sizes_idx_0;
              input_sizes_idx_1++) {
-          Jcu_data[(input_sizes_idx_1 + b_Jx->size[0] * nf) +
+          Jcu_data[(input_sizes_idx_1 + b_Jx->size[0] * icf_tmp) +
                    b_Jx->size[0] * 4 * i] =
-              c_Jx[(r1[input_sizes_idx_1] + 80 * nf) + 320 * i];
+              c_Jx[(r5[input_sizes_idx_1] + 80 * icf_tmp) + 320 * i];
         }
       }
     }
     i = Ju->size[0] * Ju->size[1] * Ju->size[2];
-    Ju->size[0] = r->size[0];
+    Ju->size[0] = r1->size[0];
     Ju->size[1] = 2;
     Ju->size[2] = 10;
     emxEnsureCapacity_real_T(Ju, i);
     f2_data = Ju->data;
-    input_sizes_idx_0 = (r->size[0] << 1) * 10;
+    input_sizes_idx_0 = (r1->size[0] << 1) * 10;
     for (i = 0; i < input_sizes_idx_0; i++) {
       f2_data[i] = 0.0;
     }
     i = c->size[0];
-    c->size[0] = r->size[0];
+    c->size[0] = r1->size[0];
     emxEnsureCapacity_real_T(c, i);
     b_c_data = c->data;
-    input_sizes_idx_0 = r->size[0];
+    input_sizes_idx_0 = r1->size[0];
     for (i = 0; i < input_sizes_idx_0; i++) {
-      b_c_data[i] = Je[r1[i]];
+      b_c_data[i] = Je[r5[i]];
     }
     znlmpc_reformJacobian(b_Jx, Ju, c, Jc);
     Jc_data = Jc->data;
   }
   emxFree_real_T(&b_Jx);
-  emxFree_int8_T(&r);
+  emxFree_int8_T(&r1);
   inequalityConstraints(X, U, z[50], userdata_PredictionHorizon,
                         runtimedata_Parameters_f1, runtimedata_Parameters_f5,
                         cu);
@@ -542,7 +582,6 @@ void c_nlmpcmoveCodeGeneration_anonF(
     Jcu->size[0] = 0;
     Jcu->size[1] = 0;
   } else {
-    __m128d r3;
     nf = cu->size[0] - 1;
     emxInit_real_T(&d_Jx, 3);
     i = d_Jx->size[0] * d_Jx->size[1] * d_Jx->size[2];
@@ -569,12 +608,11 @@ void c_nlmpcmoveCodeGeneration_anonF(
     for (i = 0; i < input_sizes_idx_0; i++) {
       b_c_data[i] = 0.0;
     }
-    for (b_input_sizes_idx_1 = 0; b_input_sizes_idx_1 < 44;
-         b_input_sizes_idx_1++) {
-      d = muDoubleScalarAbs(X[b_input_sizes_idx_1]);
-      b_X[b_input_sizes_idx_1] = d;
+    for (j = 0; j < 44; j++) {
+      d = muDoubleScalarAbs(X[j]);
+      b_X[j] = d;
       if (d < 1.0) {
-        b_X[b_input_sizes_idx_1] = 1.0;
+        b_X[j] = 1.0;
       }
     }
     for (b_i = 0; b_i < 10; b_i++) {
@@ -592,10 +630,10 @@ void c_nlmpcmoveCodeGeneration_anonF(
           input_sizes_idx_1 = (input_sizes_idx_0 / 2) << 1;
           b_input_sizes_idx_1 = input_sizes_idx_1 - 2;
           for (i = 0; i <= b_input_sizes_idx_1; i += 2) {
-            r2 = _mm_loadu_pd(&f_data[i]);
-            r3 = _mm_loadu_pd(&cu_data[i]);
+            r = _mm_loadu_pd(&f_data[i]);
+            r2 = _mm_loadu_pd(&cu_data[i]);
             _mm_storeu_pd(&f_data[i],
-                          _mm_div_pd(_mm_sub_pd(r2, r3), _mm_set1_pd(dx)));
+                          _mm_div_pd(_mm_sub_pd(r, r2), _mm_set1_pd(dx)));
           }
           for (i = input_sizes_idx_1; i < input_sizes_idx_0; i++) {
             f_data[i] = (f_data[i] - cu_data[i]) / dx;
@@ -611,39 +649,38 @@ void c_nlmpcmoveCodeGeneration_anonF(
         }
       }
     }
-    for (b_input_sizes_idx_1 = 0; b_input_sizes_idx_1 < 22;
-         b_input_sizes_idx_1++) {
-      d = muDoubleScalarAbs(U[b_input_sizes_idx_1]);
-      Umv[b_input_sizes_idx_1] = d;
+    for (j = 0; j < 22; j++) {
+      d = muDoubleScalarAbs(U[j]);
+      Umv[j] = d;
       if (d < 1.0) {
-        Umv[b_input_sizes_idx_1] = 1.0;
+        Umv[j] = 1.0;
       }
     }
     for (b_i = 0; b_i < 9; b_i++) {
       for (j = 0; j < 2; j++) {
-        alpha1 = 1.0E-6 * Umv[j];
+        du = 1.0E-6 * Umv[j];
         input_sizes_idx_1 = b_i + 11 * j;
-        U[input_sizes_idx_1] += alpha1;
+        U[input_sizes_idx_1] += du;
         inequalityConstraints(X, U, e, userdata_PredictionHorizon,
                               runtimedata_Parameters_f1,
                               runtimedata_Parameters_f5, f);
         f_data = f->data;
-        U[input_sizes_idx_1] -= alpha1;
+        U[input_sizes_idx_1] -= du;
         if (f->size[0] == cu->size[0]) {
           input_sizes_idx_0 = f->size[0];
           input_sizes_idx_1 = (input_sizes_idx_0 / 2) << 1;
           b_input_sizes_idx_1 = input_sizes_idx_1 - 2;
           for (i = 0; i <= b_input_sizes_idx_1; i += 2) {
-            r2 = _mm_loadu_pd(&f_data[i]);
-            r3 = _mm_loadu_pd(&cu_data[i]);
+            r = _mm_loadu_pd(&f_data[i]);
+            r2 = _mm_loadu_pd(&cu_data[i]);
             _mm_storeu_pd(&f_data[i],
-                          _mm_div_pd(_mm_sub_pd(r2, r3), _mm_set1_pd(alpha1)));
+                          _mm_div_pd(_mm_sub_pd(r, r2), _mm_set1_pd(du)));
           }
           for (i = input_sizes_idx_1; i < input_sizes_idx_0; i++) {
-            f_data[i] = (f_data[i] - cu_data[i]) / alpha1;
+            f_data[i] = (f_data[i] - cu_data[i]) / du;
           }
         } else {
-          binary_expand_op(f, cu, alpha1);
+          binary_expand_op(f, cu, du);
           f_data = f->data;
         }
         for (input_sizes_idx_0 = 0; input_sizes_idx_0 <= nf;
@@ -654,32 +691,32 @@ void c_nlmpcmoveCodeGeneration_anonF(
       }
     }
     for (j = 0; j < 2; j++) {
-      alpha1 = 1.0E-6 * Umv[j];
+      du = 1.0E-6 * Umv[j];
       input_sizes_idx_1 = 11 * j + 9;
-      U[input_sizes_idx_1] += alpha1;
+      U[input_sizes_idx_1] += du;
       input_sizes_idx_0 = 11 * j + 10;
-      U[input_sizes_idx_0] += alpha1;
+      U[input_sizes_idx_0] += du;
       inequalityConstraints(X, U, e, userdata_PredictionHorizon,
                             runtimedata_Parameters_f1,
                             runtimedata_Parameters_f5, f);
       f_data = f->data;
-      U[input_sizes_idx_1] -= alpha1;
-      U[input_sizes_idx_0] -= alpha1;
+      U[input_sizes_idx_1] -= du;
+      U[input_sizes_idx_0] -= du;
       if (f->size[0] == cu->size[0]) {
         input_sizes_idx_0 = f->size[0];
         input_sizes_idx_1 = (input_sizes_idx_0 / 2) << 1;
         b_input_sizes_idx_1 = input_sizes_idx_1 - 2;
         for (i = 0; i <= b_input_sizes_idx_1; i += 2) {
-          r2 = _mm_loadu_pd(&f_data[i]);
-          r3 = _mm_loadu_pd(&cu_data[i]);
+          r = _mm_loadu_pd(&f_data[i]);
+          r2 = _mm_loadu_pd(&cu_data[i]);
           _mm_storeu_pd(&f_data[i],
-                        _mm_div_pd(_mm_sub_pd(r2, r3), _mm_set1_pd(alpha1)));
+                        _mm_div_pd(_mm_sub_pd(r, r2), _mm_set1_pd(du)));
         }
         for (i = input_sizes_idx_1; i < input_sizes_idx_0; i++) {
-          f_data[i] = (f_data[i] - cu_data[i]) / alpha1;
+          f_data[i] = (f_data[i] - cu_data[i]) / du;
         }
       } else {
-        binary_expand_op(f, cu, alpha1);
+        binary_expand_op(f, cu, du);
         f_data = f->data;
       }
       for (input_sizes_idx_0 = 0; input_sizes_idx_0 <= nf;
@@ -688,31 +725,31 @@ void c_nlmpcmoveCodeGeneration_anonF(
             f_data[input_sizes_idx_0];
       }
     }
-    alpha1 = muDoubleScalarMax(1.0E-6, muDoubleScalarAbs(z[50])) * 1.0E-6;
-    inequalityConstraints(X, U, z[50] + alpha1, userdata_PredictionHorizon,
+    ua_idx_0 = muDoubleScalarMax(1.0E-6, muDoubleScalarAbs(z[50])) * 1.0E-6;
+    inequalityConstraints(X, U, z[50] + ua_idx_0, userdata_PredictionHorizon,
                           runtimedata_Parameters_f1, runtimedata_Parameters_f5,
                           f);
     f_data = f->data;
-    inequalityConstraints(X, U, z[50] - alpha1, userdata_PredictionHorizon,
+    inequalityConstraints(X, U, z[50] - ua_idx_0, userdata_PredictionHorizon,
                           runtimedata_Parameters_f1, runtimedata_Parameters_f5,
                           f2);
     f2_data = f2->data;
     if (f->size[0] == f2->size[0]) {
-      d = 2.0 * alpha1;
+      d = 2.0 * ua_idx_0;
       input_sizes_idx_0 = cu->size[0];
       input_sizes_idx_1 = (input_sizes_idx_0 / 2) << 1;
       b_input_sizes_idx_1 = input_sizes_idx_1 - 2;
       for (i = 0; i <= b_input_sizes_idx_1; i += 2) {
-        r2 = _mm_loadu_pd(&f_data[i]);
-        r3 = _mm_loadu_pd(&f2_data[i]);
+        r = _mm_loadu_pd(&f_data[i]);
+        r2 = _mm_loadu_pd(&f2_data[i]);
         _mm_storeu_pd(&b_c_data[i],
-                      _mm_div_pd(_mm_sub_pd(r2, r3), _mm_set1_pd(d)));
+                      _mm_div_pd(_mm_sub_pd(r, r2), _mm_set1_pd(d)));
       }
       for (i = input_sizes_idx_1; i < input_sizes_idx_0; i++) {
         b_c_data[i] = (f_data[i] - f2_data[i]) / d;
       }
     } else {
-      binary_expand_op_3(c, cu, f, f2, alpha1);
+      binary_expand_op_3(c, cu, f, f2, ua_idx_0);
     }
     znlmpc_reformJacobian(d_Jx, Ju, c, Jcu);
     Jcu_data = Jcu->data;
@@ -766,25 +803,25 @@ void c_nlmpcmoveCodeGeneration_anonF(
   emxEnsureCapacity_real_T(varargout_3, i);
   f2_data = varargout_3->data;
   for (i = 0; i < input_sizes_idx_1; i++) {
-    for (nf = 0; nf < input_sizes_idx_0; nf++) {
-      f2_data[nf + varargout_3->size[0] * i] =
-          Jc_data[nf + input_sizes_idx_0 * i];
+    for (icf_tmp = 0; icf_tmp < input_sizes_idx_0; icf_tmp++) {
+      f2_data[icf_tmp + varargout_3->size[0] * i] =
+          Jc_data[icf_tmp + input_sizes_idx_0 * i];
     }
   }
   emxFree_real_T(&Jc);
   for (i = 0; i < b_input_sizes_idx_1; i++) {
-    for (nf = 0; nf < input_sizes_idx_0; nf++) {
-      f2_data[nf + varargout_3->size[0] * (i + input_sizes_idx_1)] =
-          Jcu_data[nf + input_sizes_idx_0 * i];
+    for (icf_tmp = 0; icf_tmp < input_sizes_idx_0; icf_tmp++) {
+      f2_data[icf_tmp + varargout_3->size[0] * (i + input_sizes_idx_1)] =
+          Jcu_data[icf_tmp + input_sizes_idx_0 * i];
     }
   }
   emxFree_real_T(&Jcu);
   for (i = 0; i < 40; i++) {
-    for (nf = 0; nf < 40; nf++) {
-      varargout_4[nf + 51 * i] = Jx[i + 40 * nf];
+    for (icf_tmp = 0; icf_tmp < 40; icf_tmp++) {
+      varargout_4[icf_tmp + 51 * i] = Jx[i + 40 * icf_tmp];
     }
-    for (nf = 0; nf < 10; nf++) {
-      varargout_4[(nf + 51 * i) + 40] = y[i + 40 * nf];
+    for (icf_tmp = 0; icf_tmp < 10; icf_tmp++) {
+      varargout_4[(icf_tmp + 51 * i) + 40] = y[i + 40 * icf_tmp];
     }
     varargout_4[51 * i + 50] = 0.0;
   }
@@ -819,8 +856,8 @@ void nlmpcmoveCodeGeneration(const real_T x[4], const real_T lastMV[2],
   emxArray_real_T *initX;
   emxArray_real_T *ref;
   i_struct_T b_expl_temp;
-  i_struct_T d_expl_temp;
-  j_struct_T e_expl_temp;
+  i_struct_T c_expl_temp;
+  j_struct_T d_expl_temp;
   j_struct_T expl_temp;
   real_T b_dv[51];
   real_T z0[51];
@@ -829,18 +866,14 @@ void nlmpcmoveCodeGeneration(const real_T x[4], const real_T lastMV[2],
   real_T Umv[22];
   real_T b_lastMV[20];
   real_T a[10];
-  real_T target_relative[2];
-  real_T R_tmp;
-  real_T R_tmp_tmp;
-  real_T b_cost_inputs;
-  real_T b_cost_progress;
-  real_T c_expl_temp;
-  real_T cost_inputs;
-  real_T cost_progress;
-  real_T d;
+  real_T ic[2];
+  real_T ExitFlag;
+  real_T Out_constrviolation;
+  real_T Out_iterations;
   real_T e0;
-  real_T onlinedata_idx_0;
-  real_T onlinedata_idx_1;
+  real_T f_expl_temp;
+  real_T g_expl_temp;
+  real_T h_expl_temp;
   real_T *b_initX_data;
   real_T *initMV_data;
   real_T *initX_data;
@@ -1090,11 +1123,11 @@ void nlmpcmoveCodeGeneration(const real_T x[4], const real_T lastMV[2],
   }
   emxFree_real_T(&initMV);
   for (i = 0; i < 10; i++) {
-    d = 0.0;
+    e0 = 0.0;
     for (i1 = 0; i1 < 20; i1++) {
-      d += (real_T)b_a[i + 10 * i1] * initX_data[i1];
+      e0 += (real_T)b_a[i + 10 * i1] * initX_data[i1];
     }
-    a[i] = d;
+    a[i] = e0;
   }
   emxFree_real_T(&initX);
   for (i = 0; i < 40; i++) {
@@ -1143,11 +1176,11 @@ void nlmpcmoveCodeGeneration(const real_T x[4], const real_T lastMV[2],
   memset(&info->Xopt[0], 0, 44U * sizeof(real_T));
   memset(&Umv[0], 0, 22U * sizeof(real_T));
   for (i = 0; i < 20; i++) {
-    d = 0.0;
+    e0 = 0.0;
     for (i1 = 0; i1 < 10; i1++) {
-      d += (real_T)iv[i + 20 * i1] * z0[i1 + 40];
+      e0 += (real_T)iv[i + 20 * i1] * z0[i1 + 40];
     }
-    b_lastMV[i] = d;
+    b_lastMV[i] = e0;
   }
   for (i = 0; i < 2; i++) {
     for (i1 = 0; i1 < 10; i1++) {
@@ -1170,99 +1203,18 @@ void nlmpcmoveCodeGeneration(const real_T x[4], const real_T lastMV[2],
   if (z0[50] <= 0.0) {
     e0 = 1.0E-5;
   }
-  /*  Unpack */
-  /*  weights is fed in as an array of  */
-  /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
-   * sofConstraints] */
-  cost_progress = 0.0;
-  for (expl_temp_idx_0 = 0; expl_temp_idx_0 < 11; expl_temp_idx_0++) {
-    /*  Rotation matrix for transforming to the vehicle's local frame */
-    R_tmp_tmp = -info->Xopt[expl_temp_idx_0 + 22];
-    R_tmp = R_tmp_tmp;
-    b_sind(&R_tmp);
-    b_cosd(&R_tmp_tmp);
-    onlinedata_idx_0 =
-        onlinedata->Parameters.f3[0] - info->Xopt[expl_temp_idx_0];
-    onlinedata_idx_1 =
-        onlinedata->Parameters.f3[3] - info->Xopt[expl_temp_idx_0 + 11];
-    target_relative[0] =
-        R_tmp_tmp * onlinedata_idx_0 + -R_tmp * onlinedata_idx_1;
-    target_relative[1] =
-        R_tmp * onlinedata_idx_0 + R_tmp_tmp * onlinedata_idx_1;
-    d = target_relative[0] * onlinedata->Parameters.f4[4];
-    d += target_relative[1] * onlinedata->Parameters.f4[5];
-    R_tmp_tmp = d * target_relative[0];
-    d = target_relative[0] * onlinedata->Parameters.f4[6];
-    d += target_relative[1] * onlinedata->Parameters.f4[7];
-    R_tmp_tmp += d * target_relative[1];
-    cost_progress += R_tmp_tmp;
-  }
-  /*  quadratic cost for inputs */
-  cost_inputs = 0.0;
-  d = onlinedata->Parameters.f4[0];
-  c_expl_temp = onlinedata->Parameters.f4[1];
-  R_tmp_tmp = onlinedata->Parameters.f4[2];
-  R_tmp = onlinedata->Parameters.f4[3];
-  for (expl_temp_idx_0 = 0; expl_temp_idx_0 < 11; expl_temp_idx_0++) {
-    onlinedata_idx_0 = info->MVopt[expl_temp_idx_0 + 11];
-    onlinedata_idx_1 = info->MVopt[expl_temp_idx_0];
-    cost_inputs += (onlinedata_idx_1 * d + onlinedata_idx_0 * c_expl_temp) *
-                       onlinedata_idx_1 +
-                   (onlinedata_idx_1 * R_tmp_tmp + onlinedata_idx_0 * R_tmp) *
-                       onlinedata_idx_0;
-  }
-  /*  Unpack */
-  /*  weights is fed in as an array of  */
-  /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
-   * sofConstraints] */
-  b_cost_progress = 0.0;
-  for (expl_temp_idx_0 = 0; expl_temp_idx_0 < 11; expl_temp_idx_0++) {
-    /*  Rotation matrix for transforming to the vehicle's local frame */
-    R_tmp_tmp = -info->Xopt[expl_temp_idx_0 + 22];
-    R_tmp = R_tmp_tmp;
-    b_sind(&R_tmp);
-    b_cosd(&R_tmp_tmp);
-    onlinedata_idx_0 =
-        onlinedata->Parameters.f3[0] - info->Xopt[expl_temp_idx_0];
-    onlinedata_idx_1 =
-        onlinedata->Parameters.f3[3] - info->Xopt[expl_temp_idx_0 + 11];
-    target_relative[0] =
-        R_tmp_tmp * onlinedata_idx_0 + -R_tmp * onlinedata_idx_1;
-    target_relative[1] =
-        R_tmp * onlinedata_idx_0 + R_tmp_tmp * onlinedata_idx_1;
-    d = target_relative[0] * onlinedata->Parameters.f4[4];
-    d += target_relative[1] * onlinedata->Parameters.f4[5];
-    R_tmp_tmp = d * target_relative[0];
-    d = target_relative[0] * onlinedata->Parameters.f4[6];
-    d += target_relative[1] * onlinedata->Parameters.f4[7];
-    R_tmp_tmp += d * target_relative[1];
-    b_cost_progress += R_tmp_tmp;
-  }
-  /*  quadratic cost for inputs */
-  b_cost_inputs = 0.0;
-  d = onlinedata->Parameters.f4[0];
-  c_expl_temp = onlinedata->Parameters.f4[1];
-  R_tmp_tmp = onlinedata->Parameters.f4[2];
-  R_tmp = onlinedata->Parameters.f4[3];
-  for (expl_temp_idx_0 = 0; expl_temp_idx_0 < 11; expl_temp_idx_0++) {
-    onlinedata_idx_0 = info->MVopt[expl_temp_idx_0 + 11];
-    onlinedata_idx_1 = info->MVopt[expl_temp_idx_0];
-    b_cost_inputs += (onlinedata_idx_1 * d + onlinedata_idx_0 * c_expl_temp) *
-                         onlinedata_idx_1 +
-                     (onlinedata_idx_1 * R_tmp_tmp + onlinedata_idx_0 * R_tmp) *
-                         onlinedata_idx_0;
-  }
-  if ((cost_progress + cost_inputs) +
-          (e0 + 0.1) * onlinedata->Parameters.f4[1] <=
-      (b_cost_progress + b_cost_inputs) + e0 * onlinedata->Parameters.f4[1]) {
+  if (mpcCostFunction(info->Xopt, info->MVopt, e0 + 0.1,
+                      onlinedata->Parameters.f3, onlinedata->Parameters.f4) <=
+      mpcCostFunction(info->Xopt, info->MVopt, e0, onlinedata->Parameters.f3,
+                      onlinedata->Parameters.f4)) {
     zUB[50] = 0.0;
   }
-  target_relative[0] = 1.0;
-  target_relative[1] = 2.0;
+  ic[0] = 1.0;
+  ic[1] = 2.0;
   for (expl_temp_idx_0 = 0; expl_temp_idx_0 < 10; expl_temp_idx_0++) {
     __m128d r;
-    r = _mm_loadu_pd(&target_relative[0]);
-    _mm_storeu_pd(&target_relative[0], _mm_add_pd(r, _mm_set1_pd(8.0)));
+    r = _mm_loadu_pd(&ic[0]);
+    _mm_storeu_pd(&ic[0], _mm_add_pd(r, _mm_set1_pd(8.0)));
   }
   emxInit_real_T(&B, 1);
   B->size[0] = 0;
@@ -1296,113 +1248,114 @@ void nlmpcmoveCodeGeneration(const real_T x[4], const real_T lastMV[2],
   expl_temp.CurrentStates[2] = x[2];
   expl_temp.CurrentStates[3] = x[3];
   expl_temp.Ts = 0.1;
-  emxInitStruct_struct_T(&d_expl_temp);
-  d_expl_temp.Parameters = onlinedata->Parameters;
-  i = d_expl_temp.MVScaledTarget->size[0] * d_expl_temp.MVScaledTarget->size[1];
-  d_expl_temp.MVScaledTarget->size[0] = b_expl_temp.MVScaledTarget->size[0];
-  d_expl_temp.MVScaledTarget->size[1] = b_expl_temp.MVScaledTarget->size[1];
-  emxEnsureCapacity_real_T(d_expl_temp.MVScaledTarget, i);
+  emxInitStruct_struct_T(&c_expl_temp);
+  c_expl_temp.Parameters = onlinedata->Parameters;
+  i = c_expl_temp.MVScaledTarget->size[0] * c_expl_temp.MVScaledTarget->size[1];
+  c_expl_temp.MVScaledTarget->size[0] = b_expl_temp.MVScaledTarget->size[0];
+  c_expl_temp.MVScaledTarget->size[1] = b_expl_temp.MVScaledTarget->size[1];
+  emxEnsureCapacity_real_T(c_expl_temp.MVScaledTarget, i);
   loop_ub =
       b_expl_temp.MVScaledTarget->size[0] * b_expl_temp.MVScaledTarget->size[1];
   for (i = 0; i < loop_ub; i++) {
-    d_expl_temp.MVScaledTarget->data[i] = b_expl_temp.MVScaledTarget->data[i];
+    c_expl_temp.MVScaledTarget->data[i] = b_expl_temp.MVScaledTarget->data[i];
   }
   for (i = 0; i < 20; i++) {
-    d_expl_temp.MVRateMax[i] = rtInf;
-    d_expl_temp.MVRateMin[i] = rtMinusInf;
-    d_expl_temp.MVMax[i] = rtInf;
-    d_expl_temp.MVMin[i] = rtMinusInf;
+    c_expl_temp.MVRateMax[i] = rtInf;
+    c_expl_temp.MVRateMin[i] = rtMinusInf;
+    c_expl_temp.MVMax[i] = rtInf;
+    c_expl_temp.MVMin[i] = rtMinusInf;
   }
   for (i = 0; i < 40; i++) {
-    d_expl_temp.StateMax[i] = rtInf;
-    d_expl_temp.StateMin[i] = rtMinusInf;
-    d_expl_temp.OutputMax[i] = rtInf;
-    d_expl_temp.OutputMin[i] = rtMinusInf;
+    c_expl_temp.StateMax[i] = rtInf;
+    c_expl_temp.StateMin[i] = rtMinusInf;
+    c_expl_temp.OutputMax[i] = rtInf;
+    c_expl_temp.OutputMin[i] = rtMinusInf;
   }
-  d_expl_temp.ECRWeight = 100000.0;
+  c_expl_temp.ECRWeight = 100000.0;
   for (i = 0; i < 20; i++) {
-    d_expl_temp.MVRateWeights[i] = 0.1;
-    d_expl_temp.MVWeights[i] = 0.0;
+    c_expl_temp.MVRateWeights[i] = 0.1;
+    c_expl_temp.MVWeights[i] = 0.0;
   }
   for (i = 0; i < 40; i++) {
-    d_expl_temp.OutputWeights[i] = varargin_10[i];
+    c_expl_temp.OutputWeights[i] = varargin_10[i];
   }
-  i = d_expl_temp.ref->size[0] * d_expl_temp.ref->size[1];
-  d_expl_temp.ref->size[0] = b_expl_temp.ref->size[0];
-  d_expl_temp.ref->size[1] = b_expl_temp.ref->size[1];
-  emxEnsureCapacity_real_T(d_expl_temp.ref, i);
+  i = c_expl_temp.ref->size[0] * c_expl_temp.ref->size[1];
+  c_expl_temp.ref->size[0] = b_expl_temp.ref->size[0];
+  c_expl_temp.ref->size[1] = b_expl_temp.ref->size[1];
+  emxEnsureCapacity_real_T(c_expl_temp.ref, i);
   loop_ub = b_expl_temp.ref->size[0] * b_expl_temp.ref->size[1];
   for (i = 0; i < loop_ub; i++) {
-    d_expl_temp.ref->data[i] = b_expl_temp.ref->data[i];
+    c_expl_temp.ref->data[i] = b_expl_temp.ref->data[i];
   }
-  d_expl_temp.lastMV[0] = lastMV[0];
-  d_expl_temp.lastMV[1] = lastMV[1];
-  d_expl_temp.x[0] = x[0];
-  d_expl_temp.x[1] = x[1];
-  d_expl_temp.x[2] = x[2];
-  d_expl_temp.x[3] = x[3];
-  emxInitStruct_struct_T1(&e_expl_temp);
-  e_expl_temp.PassivityUsePredictedX = true;
-  e_expl_temp.OutputPassivityIndex = 0.1;
-  e_expl_temp.InputPassivityIndex = 0.0;
-  e_expl_temp.MVIndex[0] = 1.0;
-  e_expl_temp.MVIndex[1] = 2.0;
-  e_expl_temp.NumOfInputs = 2.0;
-  e_expl_temp.NumOfOutputs = 4.0;
-  e_expl_temp.NumOfStates = 4.0;
-  e_expl_temp.PredictionHorizon = 10.0;
-  i = e_expl_temp.MVTarget->size[0] * e_expl_temp.MVTarget->size[1];
-  e_expl_temp.MVTarget->size[0] = expl_temp.MVTarget->size[0];
-  e_expl_temp.MVTarget->size[1] = expl_temp.MVTarget->size[1];
-  emxEnsureCapacity_real_T(e_expl_temp.MVTarget, i);
+  c_expl_temp.lastMV[0] = lastMV[0];
+  c_expl_temp.lastMV[1] = lastMV[1];
+  c_expl_temp.x[0] = x[0];
+  c_expl_temp.x[1] = x[1];
+  c_expl_temp.x[2] = x[2];
+  c_expl_temp.x[3] = x[3];
+  emxInitStruct_struct_T1(&d_expl_temp);
+  d_expl_temp.PassivityUsePredictedX = true;
+  d_expl_temp.OutputPassivityIndex = 0.1;
+  d_expl_temp.InputPassivityIndex = 0.0;
+  d_expl_temp.MVIndex[0] = 1.0;
+  d_expl_temp.MVIndex[1] = 2.0;
+  d_expl_temp.NumOfInputs = 2.0;
+  d_expl_temp.NumOfOutputs = 4.0;
+  d_expl_temp.NumOfStates = 4.0;
+  d_expl_temp.PredictionHorizon = 10.0;
+  i = d_expl_temp.MVTarget->size[0] * d_expl_temp.MVTarget->size[1];
+  d_expl_temp.MVTarget->size[0] = expl_temp.MVTarget->size[0];
+  d_expl_temp.MVTarget->size[1] = expl_temp.MVTarget->size[1];
+  emxEnsureCapacity_real_T(d_expl_temp.MVTarget, i);
   loop_ub = expl_temp.MVTarget->size[0] * expl_temp.MVTarget->size[1];
   for (i = 0; i < loop_ub; i++) {
-    e_expl_temp.MVTarget->data[i] = expl_temp.MVTarget->data[i];
+    d_expl_temp.MVTarget->data[i] = expl_temp.MVTarget->data[i];
   }
-  i = e_expl_temp.References->size[0] * e_expl_temp.References->size[1];
-  e_expl_temp.References->size[0] = expl_temp.References->size[0];
-  e_expl_temp.References->size[1] = expl_temp.References->size[1];
-  emxEnsureCapacity_real_T(e_expl_temp.References, i);
+  i = d_expl_temp.References->size[0] * d_expl_temp.References->size[1];
+  d_expl_temp.References->size[0] = expl_temp.References->size[0];
+  d_expl_temp.References->size[1] = expl_temp.References->size[1];
+  emxEnsureCapacity_real_T(d_expl_temp.References, i);
   loop_ub = expl_temp.References->size[0] * expl_temp.References->size[1];
   for (i = 0; i < loop_ub; i++) {
-    e_expl_temp.References->data[i] = expl_temp.References->data[i];
+    d_expl_temp.References->data[i] = expl_temp.References->data[i];
   }
-  e_expl_temp.LastMV[0] = lastMV[0];
-  e_expl_temp.LastMV[1] = lastMV[1];
-  e_expl_temp.CurrentStates[0] = x[0];
-  e_expl_temp.CurrentStates[1] = x[1];
-  e_expl_temp.CurrentStates[2] = x[2];
-  e_expl_temp.CurrentStates[3] = x[3];
-  e_expl_temp.Ts = 0.1;
+  d_expl_temp.LastMV[0] = lastMV[0];
+  d_expl_temp.LastMV[1] = lastMV[1];
+  d_expl_temp.CurrentStates[0] = x[0];
+  d_expl_temp.CurrentStates[1] = x[1];
+  d_expl_temp.CurrentStates[2] = x[2];
+  d_expl_temp.CurrentStates[3] = x[3];
+  d_expl_temp.Ts = 0.1;
   for (i = 0; i < 40; i++) {
     b_dv[i] = rtMinusInf;
   }
   for (i = 0; i < 10; i++) {
     b_dv[i + 40] = rtMinusInf;
   }
-  char_T f_expl_temp[3];
+  char_T e_expl_temp[3];
   b_dv[50] = 0.0;
   info->Cost =
-      fmincon(&b_expl_temp, &expl_temp, z0, ref, B, b_dv, zUB, &d_expl_temp,
-              &e_expl_temp, &e0, &b_cost_inputs, &R_tmp_tmp, f_expl_temp,
-              &R_tmp, &onlinedata_idx_0, &onlinedata_idx_1, &c_expl_temp);
-  emxFreeStruct_struct_T1(&e_expl_temp);
-  emxFreeStruct_struct_T(&d_expl_temp);
+      fmincon(&b_expl_temp, &expl_temp, z0, ref, B, b_dv, zUB, &c_expl_temp,
+              &d_expl_temp, &ExitFlag, &Out_iterations, &e0, e_expl_temp,
+              &Out_constrviolation, &f_expl_temp, &g_expl_temp, &h_expl_temp);
+  emxFreeStruct_struct_T1(&d_expl_temp);
+  emxFreeStruct_struct_T(&c_expl_temp);
   emxFreeStruct_struct_T1(&expl_temp);
   emxFreeStruct_struct_T(&b_expl_temp);
   emxFree_real_T(&ref);
   emxFree_real_T(&B);
-  if (((int32_T)muDoubleScalarRound(e0) == 0) && (R_tmp > 1.0E-6)) {
-    e0 = -2.0;
+  if (((int32_T)muDoubleScalarRound(ExitFlag) == 0) &&
+      (Out_constrviolation > 1.0E-6)) {
+    ExitFlag = -2.0;
   }
   memset(&info->Xopt[0], 0, 44U * sizeof(real_T));
   memset(&Umv[0], 0, 22U * sizeof(real_T));
   for (i = 0; i < 20; i++) {
-    d = 0.0;
+    e0 = 0.0;
     for (i1 = 0; i1 < 10; i1++) {
-      d += (real_T)iv[i + 20 * i1] * z0[i1 + 40];
+      e0 += (real_T)iv[i + 20 * i1] * z0[i1 + 40];
     }
-    b_lastMV[i] = d;
+    b_lastMV[i] = e0;
   }
   for (i = 0; i < 2; i++) {
     for (i1 = 0; i1 < 10; i1++) {
@@ -1421,15 +1374,15 @@ void nlmpcmoveCodeGeneration(const real_T x[4], const real_T lastMV[2],
     memcpy(&info->MVopt[expl_temp_idx_0 * 11], &Umv[expl_temp_idx_0 * 11],
            11U * sizeof(real_T));
   }
-  if (e0 > 0.0) {
+  if ((ExitFlag > 0.0) || ((int32_T)muDoubleScalarRound(ExitFlag) == 0)) {
     mv[0] = info->MVopt[0];
     mv[1] = info->MVopt[11];
   } else {
     mv[0] = lastMV[0];
     mv[1] = lastMV[1];
   }
-  info->ExitFlag = e0;
-  info->Iterations = b_cost_inputs;
+  info->ExitFlag = ExitFlag;
+  info->Iterations = Out_iterations;
   onlinedata->Slack0 = muDoubleScalarMax(0.0, z0[50]);
   for (expl_temp_idx_0 = 0; expl_temp_idx_0 < 11; expl_temp_idx_0++) {
     info->Yopt[expl_temp_idx_0] = info->Xopt[expl_temp_idx_0];

@@ -3,9 +3,9 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * sind.h
+ * mpcCostFunction.h
  *
- * Code generation for function 'sind'
+ * Code generation for function 'mpcCostFunction'
  *
  */
 
@@ -21,6 +21,7 @@
 #include <string.h>
 
 /* Function Declarations */
-void b_sind(real_T *x);
+real_T mpcCostFunction(const real_T X[44], const real_T U[22], real_T e,
+                       const real_T waypoints[6], const real_T weights[14]);
 
-/* End of code generation (sind.h) */
+/* End of code generation (mpcCostFunction.h) */

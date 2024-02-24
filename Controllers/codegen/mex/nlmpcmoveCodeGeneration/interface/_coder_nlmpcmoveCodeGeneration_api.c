@@ -69,10 +69,10 @@ static void k_emlrt_marshallIn(const mxArray *u,
 
 static void l_emlrt_marshallIn(const mxArray *u,
                                const emlrtMsgIdentifier *parentId,
-                               real_T y[16]);
+                               real_T y[14]);
 
 static void m_emlrt_marshallIn(const mxArray *u,
-                               const emlrtMsgIdentifier *parentId, real_T y[6]);
+                               const emlrtMsgIdentifier *parentId, real_T y[7]);
 
 static real_T (*n_emlrt_marshallIn(const mxArray *src,
                                    const emlrtMsgIdentifier *msgId))[4];
@@ -95,10 +95,10 @@ static void s_emlrt_marshallIn(const mxArray *src,
                                const emlrtMsgIdentifier *msgId, real_T ret[6]);
 
 static void t_emlrt_marshallIn(const mxArray *src,
-                               const emlrtMsgIdentifier *msgId, real_T ret[16]);
+                               const emlrtMsgIdentifier *msgId, real_T ret[14]);
 
 static void u_emlrt_marshallIn(const mxArray *src,
-                               const emlrtMsgIdentifier *msgId, real_T ret[6]);
+                               const emlrtMsgIdentifier *msgId, real_T ret[7]);
 
 /* Function Definitions */
 static real_T (*b_emlrt_marshallIn(const mxArray *u,
@@ -113,8 +113,8 @@ static real_T (*b_emlrt_marshallIn(const mxArray *u,
 static const mxArray *b_emlrt_marshallOut(const struct1_T *u)
 {
   static const int32_T b_iv[2] = {3, 2};
-  static const int32_T b_iv1[2] = {2, 8};
-  static const int32_T iv2[2] = {1, 6};
+  static const int32_T b_iv1[2] = {2, 7};
+  static const int32_T iv2[2] = {1, 7};
   static const char_T *sv[6] = {"ref", "MVTarget", "Parameters",
                                 "X0",  "MV0",      "Slack0"};
   const mxArray *b_y;
@@ -162,7 +162,7 @@ static const mxArray *b_emlrt_marshallOut(const struct1_T *u)
                               mxREAL);
   pData = emlrtMxGetPr(m);
   i = 0;
-  for (b_i = 0; b_i < 8; b_i++) {
+  for (b_i = 0; b_i < 7; b_i++) {
     int32_T i1;
     i1 = b_i << 1;
     pData[i] = u->Parameters.f4[i1];
@@ -174,7 +174,7 @@ static const mxArray *b_emlrt_marshallOut(const struct1_T *u)
   g_y = NULL;
   m = emlrtCreateNumericArray(2, (const void *)&iv2[0], mxDOUBLE_CLASS, mxREAL);
   pData = emlrtMxGetPr(m);
-  for (b_i = 0; b_i < 6; b_i++) {
+  for (b_i = 0; b_i < 7; b_i++) {
     pData[b_i] = u->Parameters.f5[b_i];
   }
   emlrtAssign(&g_y, m);
@@ -503,14 +503,14 @@ static void k_emlrt_marshallIn(const mxArray *u,
 }
 
 static void l_emlrt_marshallIn(const mxArray *u,
-                               const emlrtMsgIdentifier *parentId, real_T y[16])
+                               const emlrtMsgIdentifier *parentId, real_T y[14])
 {
   t_emlrt_marshallIn(emlrtAlias(u), parentId, y);
   emlrtDestroyArray(&u);
 }
 
 static void m_emlrt_marshallIn(const mxArray *u,
-                               const emlrtMsgIdentifier *parentId, real_T y[6])
+                               const emlrtMsgIdentifier *parentId, real_T y[7])
 {
   u_emlrt_marshallIn(emlrtAlias(u), parentId, y);
   emlrtDestroyArray(&u);
@@ -612,30 +612,30 @@ static void s_emlrt_marshallIn(const mxArray *src,
 }
 
 static void t_emlrt_marshallIn(const mxArray *src,
-                               const emlrtMsgIdentifier *msgId, real_T ret[16])
+                               const emlrtMsgIdentifier *msgId, real_T ret[14])
 {
-  static const int32_T dims[2] = {2, 8};
-  real_T(*r)[16];
+  static const int32_T dims[2] = {2, 7};
+  real_T(*r)[14];
   int32_T i;
   emlrtCheckBuiltInR2012b(emlrtRootTLSGlobal, msgId, src, "double", false, 2U,
                           (const void *)&dims[0]);
-  r = (real_T(*)[16])emlrtMxGetData(src);
-  for (i = 0; i < 16; i++) {
+  r = (real_T(*)[14])emlrtMxGetData(src);
+  for (i = 0; i < 14; i++) {
     ret[i] = (*r)[i];
   }
   emlrtDestroyArray(&src);
 }
 
 static void u_emlrt_marshallIn(const mxArray *src,
-                               const emlrtMsgIdentifier *msgId, real_T ret[6])
+                               const emlrtMsgIdentifier *msgId, real_T ret[7])
 {
-  static const int32_T dims[2] = {1, 6};
-  real_T(*r)[6];
+  static const int32_T dims[2] = {1, 7};
+  real_T(*r)[7];
   int32_T i;
   emlrtCheckBuiltInR2012b(emlrtRootTLSGlobal, msgId, src, "double", false, 2U,
                           (const void *)&dims[0]);
-  r = (real_T(*)[6])emlrtMxGetData(src);
-  for (i = 0; i < 6; i++) {
+  r = (real_T(*)[7])emlrtMxGetData(src);
+  for (i = 0; i < 7; i++) {
     ret[i] = (*r)[i];
   }
   emlrtDestroyArray(&src);

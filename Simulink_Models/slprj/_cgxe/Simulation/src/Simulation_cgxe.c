@@ -4,9 +4,9 @@
 #include "m_7FHURCaqdj8HBx85ZVuatH.h"
 #include "m_Ubuc0hQMhWDyT4IHVUnH3F.h"
 #include "m_dnzcGMWurWPtQDFTDYOwHC.h"
-#include "m_CbZldr20LixTpws6qXiNyC.h"
 #include "m_tSgvweChskFYUuuPTg6HwH.h"
 #include "m_klQ7XEZS1zy3wE2vktBM0F.h"
+#include "m_6IzuJrL7P1zo7Fq3Jxa1PB.h"
 
 unsigned int cgxe_Simulation_method_dispatcher(SimStruct* S, int_T method, void*
   data)
@@ -35,14 +35,6 @@ unsigned int cgxe_Simulation_method_dispatcher(SimStruct* S, int_T method, void*
     return 1;
   }
 
-  if (ssGetChecksum0(S) == 2033019415 &&
-      ssGetChecksum1(S) == 306828270 &&
-      ssGetChecksum2(S) == 2237024133 &&
-      ssGetChecksum3(S) == 4118633253) {
-    method_dispatcher_CbZldr20LixTpws6qXiNyC(S, method, data);
-    return 1;
-  }
-
   if (ssGetChecksum0(S) == 2632041385 &&
       ssGetChecksum1(S) == 1820346401 &&
       ssGetChecksum2(S) == 3582283875 &&
@@ -56,6 +48,14 @@ unsigned int cgxe_Simulation_method_dispatcher(SimStruct* S, int_T method, void*
       ssGetChecksum2(S) == 2910500283 &&
       ssGetChecksum3(S) == 635975606) {
     method_dispatcher_klQ7XEZS1zy3wE2vktBM0F(S, method, data);
+    return 1;
+  }
+
+  if (ssGetChecksum0(S) == 3894844467 &&
+      ssGetChecksum1(S) == 1282664987 &&
+      ssGetChecksum2(S) == 2645995567 &&
+      ssGetChecksum3(S) == 4187055563) {
+    method_dispatcher_6IzuJrL7P1zo7Fq3Jxa1PB(S, method, data);
     return 1;
   }
 

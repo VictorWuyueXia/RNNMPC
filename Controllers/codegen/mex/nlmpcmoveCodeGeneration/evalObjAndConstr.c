@@ -13,14 +13,13 @@
 #include "evalObjAndConstr.h"
 #include "all.h"
 #include "checkVectorNonFinite.h"
-#include "cosd.h"
 #include "inequalityConstraints.h"
+#include "mpcCostFunction.h"
 #include "nlmpcmoveCodeGeneration_data.h"
 #include "nlmpcmoveCodeGeneration_emxutil.h"
 #include "nlmpcmoveCodeGeneration_types.h"
 #include "rt_nonfinite.h"
-#include "sind.h"
-#include "tand.h"
+#include "vehicleDynamics_Simple.h"
 #include "mwmathutil.h"
 #include <emmintrin.h>
 #include <string.h>
@@ -44,26 +43,16 @@ real_T evalObjAndConstr(int32_T c_obj_next_next_next_next_next_,
   real_T U[22];
   real_T Umv[22];
   real_T a[20];
-  real_T R_tmp;
-  real_T cost_inputs;
-  real_T cost_progress;
-  real_T d;
-  real_T d1;
-  real_T d2;
-  real_T d3;
-  real_T d4;
+  real_T c_tmp;
   real_T fval;
-  real_T g_obj_next_next_next_next_next_;
-  real_T h_obj_next_next_next_next_next_;
-  real_T target_relative_idx_0;
   real_T *Cineq_workspace_data;
   real_T *b_c_data;
   real_T *c_data;
   real_T *cu_data;
-  int32_T b_i;
   int32_T i;
   int32_T k;
   int32_T n;
+  int32_T yk;
   int32_T *ineqRange_data;
   int8_T *r2;
   boolean_T y;
@@ -73,73 +62,31 @@ real_T evalObjAndConstr(int32_T c_obj_next_next_next_next_next_,
   memset(&X[0], 0, 44U * sizeof(real_T));
   memset(&Umv[0], 0, 22U * sizeof(real_T));
   for (i = 0; i < 20; i++) {
-    R_tmp = 0.0;
-    for (n = 0; n < 10; n++) {
-      R_tmp += (real_T)iv[i + 20 * n] * x[n + 40];
+    c_tmp = 0.0;
+    for (yk = 0; yk < 10; yk++) {
+      c_tmp += (real_T)iv[i + 20 * yk] * x[yk + 40];
     }
-    a[i] = R_tmp;
+    a[i] = c_tmp;
   }
   for (i = 0; i < 2; i++) {
-    for (n = 0; n < 10; n++) {
-      Umv[n + 11 * i] = a[i + (n << 1)];
+    for (yk = 0; yk < 10; yk++) {
+      Umv[yk + 11 * i] = a[i + (yk << 1)];
     }
   }
   memcpy(&b_x[0], &x[0], 40U * sizeof(real_T));
   for (i = 0; i < 4; i++) {
-    for (n = 0; n < 10; n++) {
-      X[(n + 11 * i) + 1] = b_x[i + (n << 2)];
+    for (yk = 0; yk < 10; yk++) {
+      X[(yk + 11 * i) + 1] = b_x[i + (yk << 2)];
     }
     X[11 * i] = f_obj_next_next_next_next_next_->runtimedata.x[i];
   }
-  for (b_i = 0; b_i < 2; b_i++) {
-    Umv[11 * b_i + 10] = Umv[11 * b_i + 9];
-    memcpy(&U[b_i * 11], &Umv[b_i * 11], 11U * sizeof(real_T));
+  for (n = 0; n < 2; n++) {
+    Umv[11 * n + 10] = Umv[11 * n + 9];
+    memcpy(&U[n * 11], &Umv[n * 11], 11U * sizeof(real_T));
   }
-  /*  Unpack */
-  /*  weights is fed in as an array of  */
-  /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
-   * sofConstraints] */
-  cost_progress = 0.0;
-  for (b_i = 0; b_i < 11; b_i++) {
-    /*  Rotation matrix for transforming to the vehicle's local frame */
-    cost_inputs = -X[b_i + 22];
-    R_tmp = cost_inputs;
-    b_sind(&R_tmp);
-    b_cosd(&cost_inputs);
-    g_obj_next_next_next_next_next_ =
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] - X[b_i];
-    h_obj_next_next_next_next_next_ =
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
-        X[b_i + 11];
-    target_relative_idx_0 = cost_inputs * g_obj_next_next_next_next_next_ +
-                            -R_tmp * h_obj_next_next_next_next_next_;
-    R_tmp = R_tmp * g_obj_next_next_next_next_next_ +
-            cost_inputs * h_obj_next_next_next_next_next_;
-    cost_progress +=
-        (target_relative_idx_0 *
-             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
-         R_tmp *
-             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[5]) *
-            target_relative_idx_0 +
-        (target_relative_idx_0 *
-             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
-         R_tmp *
-             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[7]) *
-            R_tmp;
-  }
-  /*  quadratic cost for inputs */
-  cost_inputs = 0.0;
-  R_tmp = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
-  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
-  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
-  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
-  for (b_i = 0; b_i < 11; b_i++) {
-    d3 = U[b_i + 11];
-    d4 = U[b_i];
-    cost_inputs += (d4 * R_tmp + d3 * d) * d4 + (d4 * d1 + d3 * d2) * d3;
-  }
-  fval = (cost_progress + cost_inputs) +
-         f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1] * x[50];
+  fval = mpcCostFunction(
+      X, U, x[50], f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
+      f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
   *status = 1;
   y = muDoubleScalarIsNaN(fval);
   if (muDoubleScalarIsInf(fval) || y) {
@@ -153,7 +100,7 @@ real_T evalObjAndConstr(int32_T c_obj_next_next_next_next_next_,
   }
   if (*status == 1) {
     real_T b_X[44];
-    int32_T yk;
+    real_T e;
     int8_T ic_idx_0;
     int8_T ic_idx_1;
     int8_T ic_idx_2;
@@ -181,9 +128,9 @@ real_T evalObjAndConstr(int32_T c_obj_next_next_next_next_next_,
       }
     }
     i = ineqRange->size[1];
-    n = ineqRange->size[0] * ineqRange->size[1];
+    yk = ineqRange->size[0] * ineqRange->size[1];
     ineqRange->size[0] = 1;
-    emxEnsureCapacity_int32_T(ineqRange, n);
+    emxEnsureCapacity_int32_T(ineqRange, yk);
     ineqRange_data = ineqRange->data;
     yk = i - 1;
     n = (i / 4) << 2;
@@ -200,28 +147,28 @@ real_T evalObjAndConstr(int32_T c_obj_next_next_next_next_next_,
     memset(&X[0], 0, 44U * sizeof(real_T));
     memset(&Umv[0], 0, 22U * sizeof(real_T));
     for (i = 0; i < 20; i++) {
-      R_tmp = 0.0;
-      for (n = 0; n < 10; n++) {
-        R_tmp += (real_T)iv[i + 20 * n] * x[n + 40];
+      c_tmp = 0.0;
+      for (yk = 0; yk < 10; yk++) {
+        c_tmp += (real_T)iv[i + 20 * yk] * x[yk + 40];
       }
-      a[i] = R_tmp;
+      a[i] = c_tmp;
     }
     for (i = 0; i < 2; i++) {
-      for (n = 0; n < 10; n++) {
-        Umv[n + 11 * i] = a[i + (n << 1)];
+      for (yk = 0; yk < 10; yk++) {
+        Umv[yk + 11 * i] = a[i + (yk << 1)];
       }
     }
-    h_obj_next_next_next_next_next_ = x[50];
+    e = x[50];
     memcpy(&b_x[0], &x[0], 40U * sizeof(real_T));
     for (i = 0; i < 4; i++) {
-      for (n = 0; n < 10; n++) {
-        X[(n + 11 * i) + 1] = b_x[i + (n << 2)];
+      for (yk = 0; yk < 10; yk++) {
+        X[(yk + 11 * i) + 1] = b_x[i + (yk << 2)];
       }
       X[11 * i] = d_obj_next_next_next_next_next_->x[i];
     }
-    for (b_i = 0; b_i < 2; b_i++) {
-      Umv[11 * b_i + 10] = Umv[11 * b_i + 9];
-      memcpy(&U[b_i * 11], &Umv[b_i * 11], 11U * sizeof(real_T));
+    for (n = 0; n < 2; n++) {
+      Umv[11 * n + 10] = Umv[11 * n + 9];
+      memcpy(&U[n * 11], &Umv[n * 11], 11U * sizeof(real_T));
     }
     memset(&b_x[0], 0, 40U * sizeof(real_T));
     ic_idx_0 = 1;
@@ -240,40 +187,20 @@ real_T evalObjAndConstr(int32_T c_obj_next_next_next_next_next_,
       b_X[yk + 2] = X[i + 22];
       b_X[yk + 3] = X[i + 33];
     }
-    for (b_i = 0; b_i < 10; b_i++) {
-      /*  Unpack */
-      /*  [x_pos, y_pos, yaw_direction, speed] */
-      /*  Vehicle dynamics equations - continuous */
-      /*  Euler's method */
-      /*  Return the next state */
-      i = b_i << 2;
-      R_tmp = b_X[i + 2];
-      d = R_tmp;
-      b_cosd(&d);
-      d1 = R_tmp;
-      b_sind(&d1);
-      n = b_i << 1;
-      d2 = Umv[n + 1];
-      b_tand(&d2);
-      d3 = b_X[i + 3];
-      yk = (b_i + 1) << 2;
-      b_x[ic_idx_0 - 1] =
-          b_X[yk] -
-          (b_X[i] + d3 * d * d_obj_next_next_next_next_next_->Parameters.f1);
+    for (n = 0; n < 10; n++) {
+      real_T b_dv[4];
+      vehicleDynamics_Simple(&b_X[n << 2], &Umv[n << 1],
+                             d_obj_next_next_next_next_next_->Parameters.f1,
+                             d_obj_next_next_next_next_next_->Parameters.f2,
+                             b_dv);
+      yk = (n + 1) << 2;
+      b_x[ic_idx_0 - 1] = b_X[yk] - b_dv[0];
       ic_idx_0 = (int8_T)(ic_idx_0 + 4);
-      b_x[ic_idx_1 - 1] =
-          b_X[yk + 1] -
-          (b_X[i + 1] +
-           d3 * d1 * d_obj_next_next_next_next_next_->Parameters.f1);
+      b_x[ic_idx_1 - 1] = b_X[yk + 1] - b_dv[1];
       ic_idx_1 = (int8_T)(ic_idx_1 + 4);
-      b_x[ic_idx_2 - 1] =
-          b_X[yk + 2] -
-          (R_tmp + d3 * d2 / d_obj_next_next_next_next_next_->Parameters.f2 *
-                       d_obj_next_next_next_next_next_->Parameters.f1);
+      b_x[ic_idx_2 - 1] = b_X[yk + 2] - b_dv[2];
       ic_idx_2 = (int8_T)(ic_idx_2 + 4);
-      b_x[ic_idx_3 - 1] =
-          b_X[yk + 3] -
-          (d3 + Umv[n] * d_obj_next_next_next_next_next_->Parameters.f1);
+      b_x[ic_idx_3 - 1] = b_X[yk + 3] - b_dv[3];
       ic_idx_3 = (int8_T)(ic_idx_3 + 4);
     }
     for (i = 0; i < 40; i++) {
@@ -326,37 +253,42 @@ real_T evalObjAndConstr(int32_T c_obj_next_next_next_next_next_,
     if (guard1) {
       real_T b_c[80];
       boolean_T icf[80];
-      for (b_i = 0; b_i < 80; b_i++) {
-        b_c[b_i] = 0.0;
-        icf[b_i] = true;
+      for (n = 0; n < 80; n++) {
+        b_c[n] = 0.0;
+        icf[n] = true;
       }
       ic_idx_0 = 1;
       ic_idx_1 = 2;
       ic_idx_2 = 3;
       ic_idx_3 = 4;
-      for (b_i = 0; b_i < 10; b_i++) {
-        R_tmp = d_obj_next_next_next_next_next_->OutputMin[b_i];
+      for (n = 0; n < 10; n++) {
+        real_T d;
+        real_T d1;
+        real_T d2;
+        real_T d3;
+        real_T d4;
+        c_tmp = d_obj_next_next_next_next_next_->OutputMin[n];
         icf[ic_idx_0 - 1] =
-            ((!muDoubleScalarIsInf(R_tmp)) && (!muDoubleScalarIsNaN(R_tmp)));
-        R_tmp = d_obj_next_next_next_next_next_->OutputMin[b_i + 10];
+            ((!muDoubleScalarIsInf(c_tmp)) && (!muDoubleScalarIsNaN(c_tmp)));
+        c_tmp = d_obj_next_next_next_next_next_->OutputMin[n + 10];
         icf[ic_idx_1 - 1] =
-            ((!muDoubleScalarIsInf(R_tmp)) && (!muDoubleScalarIsNaN(R_tmp)));
-        d = d_obj_next_next_next_next_next_->OutputMin[b_i + 20];
+            ((!muDoubleScalarIsInf(c_tmp)) && (!muDoubleScalarIsNaN(c_tmp)));
+        d = d_obj_next_next_next_next_next_->OutputMin[n + 20];
         icf[ic_idx_2 - 1] =
             ((!muDoubleScalarIsInf(d)) && (!muDoubleScalarIsNaN(d)));
-        d1 = d_obj_next_next_next_next_next_->OutputMin[b_i + 30];
+        d1 = d_obj_next_next_next_next_next_->OutputMin[n + 30];
         icf[ic_idx_3 - 1] =
             ((!muDoubleScalarIsInf(d1)) && (!muDoubleScalarIsNaN(d1)));
-        d2 = d_obj_next_next_next_next_next_->OutputMax[b_i];
+        d2 = d_obj_next_next_next_next_next_->OutputMax[n];
         icf[ic_idx_0 + 3] =
             ((!muDoubleScalarIsInf(d2)) && (!muDoubleScalarIsNaN(d2)));
-        d2 = d_obj_next_next_next_next_next_->OutputMax[b_i + 10];
+        d2 = d_obj_next_next_next_next_next_->OutputMax[n + 10];
         icf[ic_idx_1 + 3] =
             ((!muDoubleScalarIsInf(d2)) && (!muDoubleScalarIsNaN(d2)));
-        d3 = d_obj_next_next_next_next_next_->OutputMax[b_i + 20];
+        d3 = d_obj_next_next_next_next_next_->OutputMax[n + 20];
         icf[ic_idx_2 + 3] =
             ((!muDoubleScalarIsInf(d3)) && (!muDoubleScalarIsNaN(d3)));
-        d4 = d_obj_next_next_next_next_next_->OutputMax[b_i + 30];
+        d4 = d_obj_next_next_next_next_next_->OutputMax[n + 30];
         icf[ic_idx_3 + 3] =
             ((!muDoubleScalarIsInf(d4)) && (!muDoubleScalarIsNaN(d4)));
         y = false;
@@ -380,27 +312,23 @@ real_T evalObjAndConstr(int32_T c_obj_next_next_next_next_next_,
           }
         }
         if (y) {
-          target_relative_idx_0 = X[b_i + 1];
-          b_c[ic_idx_0 - 1] = (d_obj_next_next_next_next_next_->OutputMin[b_i] -
-                               h_obj_next_next_next_next_next_) -
-                              target_relative_idx_0;
-          cost_inputs = X[b_i + 12];
-          b_c[ic_idx_1 - 1] =
-              (R_tmp - h_obj_next_next_next_next_next_) - cost_inputs;
-          g_obj_next_next_next_next_next_ = X[b_i + 23];
-          b_c[ic_idx_2 - 1] = (d - h_obj_next_next_next_next_next_) -
-                              g_obj_next_next_next_next_next_;
-          R_tmp = X[b_i + 34];
-          b_c[ic_idx_3 - 1] = (d1 - h_obj_next_next_next_next_next_) - R_tmp;
+          real_T b_c_tmp;
+          real_T c_c_tmp;
+          real_T d_c_tmp;
+          b_c_tmp = X[n + 1];
+          b_c[ic_idx_0 - 1] =
+              (d_obj_next_next_next_next_next_->OutputMin[n] - e) - b_c_tmp;
+          c_c_tmp = X[n + 12];
+          b_c[ic_idx_1 - 1] = (c_tmp - e) - c_c_tmp;
+          d_c_tmp = X[n + 23];
+          b_c[ic_idx_2 - 1] = (d - e) - d_c_tmp;
+          c_tmp = X[n + 34];
+          b_c[ic_idx_3 - 1] = (d1 - e) - c_tmp;
           b_c[ic_idx_0 + 3] =
-              (target_relative_idx_0 -
-               d_obj_next_next_next_next_next_->OutputMax[b_i]) -
-              h_obj_next_next_next_next_next_;
-          b_c[ic_idx_1 + 3] =
-              (cost_inputs - d2) - h_obj_next_next_next_next_next_;
-          b_c[ic_idx_2 + 3] = (g_obj_next_next_next_next_next_ - d3) -
-                              h_obj_next_next_next_next_next_;
-          b_c[ic_idx_3 + 3] = (R_tmp - d4) - h_obj_next_next_next_next_next_;
+              (b_c_tmp - d_obj_next_next_next_next_next_->OutputMax[n]) - e;
+          b_c[ic_idx_1 + 3] = (c_c_tmp - d2) - e;
+          b_c[ic_idx_2 + 3] = (d_c_tmp - d3) - e;
+          b_c[ic_idx_3 + 3] = (c_tmp - d4) - e;
         }
         ic_idx_0 = (int8_T)(ic_idx_0 + 8);
         ic_idx_1 = (int8_T)(ic_idx_1 + 8);
@@ -408,8 +336,8 @@ real_T evalObjAndConstr(int32_T c_obj_next_next_next_next_next_,
         ic_idx_3 = (int8_T)(ic_idx_3 + 8);
       }
       yk = 0;
-      for (b_i = 0; b_i < 80; b_i++) {
-        if (icf[b_i]) {
+      for (n = 0; n < 80; n++) {
+        if (icf[n]) {
           yk++;
         }
       }
@@ -418,9 +346,9 @@ real_T evalObjAndConstr(int32_T c_obj_next_next_next_next_next_,
       emxEnsureCapacity_int8_T(r1, i);
       r2 = r1->data;
       yk = 0;
-      for (b_i = 0; b_i < 80; b_i++) {
-        if (icf[b_i]) {
-          r2[yk] = (int8_T)b_i;
+      for (n = 0; n < 80; n++) {
+        if (icf[n]) {
+          r2[yk] = (int8_T)n;
           yk++;
         }
       }

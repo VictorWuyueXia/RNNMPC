@@ -23,8 +23,8 @@ typedef struct {
   real_T f1;
   real_T f2;
   real_T f3[6];
-  real_T f4[16];
-  real_T f5[6];
+  real_T f4[14];
+  real_T f5[7];
 } cell_0;
 #endif /* typedef_cell_0 */
 

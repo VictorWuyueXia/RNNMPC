@@ -24,7 +24,7 @@
 /* Function Declarations */
 void inequalityConstraints(const real_T X[44], const real_T U[22], real_T e,
                            real_T data_PredictionHorizon, real_T Ts,
-                           const real_T limits[6],
+                           const real_T limits[7],
                            emxArray_real_T *constraints);
 
 /* End of code generation (inequalityConstraints.h) */

@@ -12,13 +12,12 @@
 /* Include files */
 #include "evalObjAndConstrAndDerivatives.h"
 #include "checkVectorNonFinite.h"
-#include "cosd.h"
+#include "mpcCostFunction.h"
 #include "nlmpcmoveCodeGeneration.h"
 #include "nlmpcmoveCodeGeneration_data.h"
 #include "nlmpcmoveCodeGeneration_emxutil.h"
 #include "nlmpcmoveCodeGeneration_types.h"
 #include "rt_nonfinite.h"
-#include "sind.h"
 #include "blas.h"
 #include "mwmathutil.h"
 #include <stddef.h>
@@ -60,21 +59,13 @@ real_T evalObjAndConstrAndDerivatives(
   real_T Umv[22];
   real_T a[20];
   real_T b_dv[10];
-  real_T R_tmp;
-  real_T R_tmp_tmp;
-  real_T b_cost_progress;
-  real_T cost_inputs;
-  real_T cost_progress;
   real_T d;
   real_T d1;
   real_T d2;
-  real_T d3;
-  real_T de;
-  real_T dx;
+  real_T du;
+  real_T e;
+  real_T f;
   real_T fval;
-  real_T g_obj_next_next_next_next_next_;
-  real_T h_obj_next_next_next_next_next_;
-  real_T target_relative_idx_0;
   real_T *Cineq_workspace_data;
   real_T *JacEqTrans_workspace_data;
   real_T *JacIneqTrans_workspace_data;
@@ -84,7 +75,6 @@ real_T evalObjAndConstrAndDerivatives(
   int32_T col_end;
   int32_T idx_current;
   int32_T idx_mat;
-  int32_T j;
   boolean_T allFinite;
   JacEqTrans_workspace_data = JacEqTrans_workspace->data;
   JacIneqTrans_workspace_data = JacIneqTrans_workspace->data;
@@ -105,6 +95,7 @@ real_T evalObjAndConstrAndDerivatives(
       Umv[col + 11 * idx_current] = a[idx_current + (col << 1)];
     }
   }
+  e = x[50];
   memcpy(&b_x[0], &x[0], 40U * sizeof(real_T));
   for (idx_current = 0; idx_current < 4; idx_current++) {
     for (col = 0; col < 10; col++) {
@@ -113,55 +104,13 @@ real_T evalObjAndConstrAndDerivatives(
     X[11 * idx_current] =
         f_obj_next_next_next_next_next_->runtimedata.x[idx_current];
   }
-  for (idx_mat = 0; idx_mat < 2; idx_mat++) {
-    Umv[11 * idx_mat + 10] = Umv[11 * idx_mat + 9];
-    memcpy(&U[idx_mat * 11], &Umv[idx_mat * 11], 11U * sizeof(real_T));
+  for (col = 0; col < 2; col++) {
+    Umv[11 * col + 10] = Umv[11 * col + 9];
+    memcpy(&U[col * 11], &Umv[col * 11], 11U * sizeof(real_T));
   }
-  /*  Unpack */
-  /*  weights is fed in as an array of  */
-  /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
-   * sofConstraints] */
-  cost_progress = 0.0;
-  for (idx_mat = 0; idx_mat < 11; idx_mat++) {
-    /*  Rotation matrix for transforming to the vehicle's local frame */
-    R_tmp_tmp = -X[idx_mat + 22];
-    R_tmp = R_tmp_tmp;
-    b_sind(&R_tmp);
-    b_cosd(&R_tmp_tmp);
-    g_obj_next_next_next_next_next_ =
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
-        X[idx_mat];
-    h_obj_next_next_next_next_next_ =
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
-        X[idx_mat + 11];
-    target_relative_idx_0 = R_tmp_tmp * g_obj_next_next_next_next_next_ +
-                            -R_tmp * h_obj_next_next_next_next_next_;
-    d = R_tmp * g_obj_next_next_next_next_next_ +
-        R_tmp_tmp * h_obj_next_next_next_next_next_;
-    cost_progress +=
-        (target_relative_idx_0 *
-             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
-         d * f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[5]) *
-            target_relative_idx_0 +
-        (target_relative_idx_0 *
-             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
-         d * f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[7]) *
-            d;
-  }
-  /*  quadratic cost for inputs */
-  cost_inputs = 0.0;
-  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
-  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
-  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
-  d3 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
-  for (idx_mat = 0; idx_mat < 11; idx_mat++) {
-    R_tmp = U[idx_mat + 11];
-    R_tmp_tmp = U[idx_mat];
-    cost_inputs += (R_tmp_tmp * d + R_tmp * d1) * R_tmp_tmp +
-                   (R_tmp_tmp * d2 + R_tmp * d3) * R_tmp;
-  }
-  de = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1] * x[50];
-  fval = (cost_progress + cost_inputs) + de;
+  fval = mpcCostFunction(
+      X, U, x[50], f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
+      f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
   memset(&a[0], 0, 20U * sizeof(real_T));
   for (idx_current = 0; idx_current < 44; idx_current++) {
     d = muDoubleScalarAbs(X[idx_current]);
@@ -170,60 +119,41 @@ real_T evalObjAndConstrAndDerivatives(
       xa[idx_current] = 1.0;
     }
   }
-  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
-  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
-  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
-  d3 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
-  for (idx_mat = 0; idx_mat < 10; idx_mat++) {
-    for (j = 0; j < 4; j++) {
-      dx = 1.0E-6 * xa[j];
-      idx_current = (idx_mat + 11 * j) + 1;
-      X[idx_current] += dx;
-      /*  Unpack */
-      /*  weights is fed in as an array of  */
-      /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
-       * sofConstraints] */
-      cost_progress = 0.0;
-      for (col_end = 0; col_end < 11; col_end++) {
-        /*  Rotation matrix for transforming to the vehicle's local frame */
-        R_tmp_tmp = -X[col_end + 22];
-        R_tmp = R_tmp_tmp;
-        b_sind(&R_tmp);
-        b_cosd(&R_tmp_tmp);
-        g_obj_next_next_next_next_next_ =
-            f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
-            X[col_end];
-        h_obj_next_next_next_next_next_ =
-            f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
-            X[col_end + 11];
-        target_relative_idx_0 = R_tmp_tmp * g_obj_next_next_next_next_next_ +
-                                -R_tmp * h_obj_next_next_next_next_next_;
-        R_tmp = R_tmp * g_obj_next_next_next_next_next_ +
-                R_tmp_tmp * h_obj_next_next_next_next_next_;
-        cost_progress +=
-            (target_relative_idx_0 *
-                 f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
-             R_tmp * f_obj_next_next_next_next_next_->runtimedata.Parameters
-                         .f4[5]) *
-                target_relative_idx_0 +
-            (target_relative_idx_0 *
-                 f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
-             R_tmp * f_obj_next_next_next_next_next_->runtimedata.Parameters
-                         .f4[7]) *
-                R_tmp;
-      }
-      /*  quadratic cost for inputs */
-      cost_inputs = 0.0;
-      for (col_end = 0; col_end < 11; col_end++) {
-        R_tmp = U[col_end + 11];
-        R_tmp_tmp = U[col_end];
-        cost_inputs += (R_tmp_tmp * d + R_tmp * d1) * R_tmp_tmp +
-                       (R_tmp_tmp * d2 + R_tmp * d3) * R_tmp;
-      }
-      X[idx_current] -= dx;
-      b_x[j + (idx_mat << 2)] =
-          (((cost_progress + cost_inputs) + de) - fval) / dx;
-    }
+  d = xa[0];
+  d1 = xa[1];
+  d2 = xa[2];
+  du = xa[3];
+  for (col = 0; col < 10; col++) {
+    real_T dx;
+    dx = 1.0E-6 * d;
+    X[col + 1] += dx;
+    f = mpcCostFunction(
+        X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+    X[col + 1] -= dx;
+    idx_current = col << 2;
+    b_x[idx_current] = (f - fval) / dx;
+    dx = 1.0E-6 * d1;
+    X[col + 12] += dx;
+    f = mpcCostFunction(
+        X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+    X[col + 12] -= dx;
+    b_x[idx_current + 1] = (f - fval) / dx;
+    dx = 1.0E-6 * d2;
+    X[col + 23] += dx;
+    f = mpcCostFunction(
+        X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+    X[col + 23] -= dx;
+    b_x[idx_current + 2] = (f - fval) / dx;
+    dx = 1.0E-6 * du;
+    X[col + 34] += dx;
+    f = mpcCostFunction(
+        X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+    X[col + 34] -= dx;
+    b_x[idx_current + 3] = (f - fval) / dx;
   }
   for (idx_current = 0; idx_current < 22; idx_current++) {
     d = muDoubleScalarAbs(U[idx_current]);
@@ -232,203 +162,44 @@ real_T evalObjAndConstrAndDerivatives(
       Umv[idx_current] = 1.0;
     }
   }
-  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
-  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
-  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
-  d3 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
-  for (idx_mat = 0; idx_mat < 9; idx_mat++) {
-    for (j = 0; j < 2; j++) {
-      dx = 1.0E-6 * Umv[j];
-      col = idx_mat + 11 * j;
-      U[col] += dx;
-      /*  Unpack */
-      /*  weights is fed in as an array of  */
-      /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
-       * sofConstraints] */
-      cost_progress = 0.0;
-      for (col_end = 0; col_end < 11; col_end++) {
-        /*  Rotation matrix for transforming to the vehicle's local frame */
-        R_tmp_tmp = -X[col_end + 22];
-        R_tmp = R_tmp_tmp;
-        b_sind(&R_tmp);
-        b_cosd(&R_tmp_tmp);
-        g_obj_next_next_next_next_next_ =
-            f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
-            X[col_end];
-        h_obj_next_next_next_next_next_ =
-            f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
-            X[col_end + 11];
-        target_relative_idx_0 = R_tmp_tmp * g_obj_next_next_next_next_next_ +
-                                -R_tmp * h_obj_next_next_next_next_next_;
-        R_tmp = R_tmp * g_obj_next_next_next_next_next_ +
-                R_tmp_tmp * h_obj_next_next_next_next_next_;
-        cost_progress +=
-            (target_relative_idx_0 *
-                 f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
-             R_tmp * f_obj_next_next_next_next_next_->runtimedata.Parameters
-                         .f4[5]) *
-                target_relative_idx_0 +
-            (target_relative_idx_0 *
-                 f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
-             R_tmp * f_obj_next_next_next_next_next_->runtimedata.Parameters
-                         .f4[7]) *
-                R_tmp;
-      }
-      /*  quadratic cost for inputs */
-      cost_inputs = 0.0;
-      for (col_end = 0; col_end < 11; col_end++) {
-        R_tmp = U[col_end + 11];
-        R_tmp_tmp = U[col_end];
-        cost_inputs += (R_tmp_tmp * d + R_tmp * d1) * R_tmp_tmp +
-                       (R_tmp_tmp * d2 + R_tmp * d3) * R_tmp;
-      }
-      U[col] -= dx;
-      a[j + (idx_mat << 1)] =
-          (((cost_progress + cost_inputs) + de) - fval) / dx;
-    }
+  d = Umv[0];
+  d1 = Umv[1];
+  for (col = 0; col < 9; col++) {
+    du = 1.0E-6 * d;
+    U[col] += du;
+    f = mpcCostFunction(
+        X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+    U[col] -= du;
+    idx_current = col << 1;
+    a[idx_current] = (f - fval) / du;
+    du = 1.0E-6 * d1;
+    U[col + 11] += du;
+    d2 = mpcCostFunction(
+        X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+    U[col + 11] -= du;
+    a[idx_current + 1] = (d2 - fval) / du;
   }
-  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
-  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
-  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
-  d3 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
-  for (j = 0; j < 2; j++) {
-    dx = 1.0E-6 * Umv[j];
-    col = 11 * j + 9;
-    U[col] += dx;
-    idx_current = 11 * j + 10;
-    U[idx_current] += dx;
-    /*  Unpack */
-    /*  weights is fed in as an array of  */
-    /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
-     * sofConstraints] */
-    cost_progress = 0.0;
-    for (idx_mat = 0; idx_mat < 11; idx_mat++) {
-      /*  Rotation matrix for transforming to the vehicle's local frame */
-      R_tmp_tmp = -X[idx_mat + 22];
-      R_tmp = R_tmp_tmp;
-      b_sind(&R_tmp);
-      b_cosd(&R_tmp_tmp);
-      g_obj_next_next_next_next_next_ =
-          f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
-          X[idx_mat];
-      h_obj_next_next_next_next_next_ =
-          f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
-          X[idx_mat + 11];
-      target_relative_idx_0 = R_tmp_tmp * g_obj_next_next_next_next_next_ +
-                              -R_tmp * h_obj_next_next_next_next_next_;
-      R_tmp = R_tmp * g_obj_next_next_next_next_next_ +
-              R_tmp_tmp * h_obj_next_next_next_next_next_;
-      cost_progress +=
-          (target_relative_idx_0 *
-               f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
-           R_tmp *
-               f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[5]) *
-              target_relative_idx_0 +
-          (target_relative_idx_0 *
-               f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
-           R_tmp *
-               f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[7]) *
-              R_tmp;
-    }
-    /*  quadratic cost for inputs */
-    cost_inputs = 0.0;
-    for (idx_mat = 0; idx_mat < 11; idx_mat++) {
-      R_tmp = U[idx_mat + 11];
-      R_tmp_tmp = U[idx_mat];
-      cost_inputs += (R_tmp_tmp * d + R_tmp * d1) * R_tmp_tmp +
-                     (R_tmp_tmp * d2 + R_tmp * d3) * R_tmp;
-    }
-    U[col] -= dx;
-    U[idx_current] -= dx;
-    a[j + 18] = (((cost_progress + cost_inputs) + de) - fval) / dx;
-  }
-  de = muDoubleScalarMax(1.0E-6, muDoubleScalarAbs(x[50])) * 1.0E-6;
-  /*  Unpack */
-  /*  weights is fed in as an array of  */
-  /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
-   * sofConstraints] */
-  cost_progress = 0.0;
-  for (idx_mat = 0; idx_mat < 11; idx_mat++) {
-    /*  Rotation matrix for transforming to the vehicle's local frame */
-    R_tmp_tmp = -X[idx_mat + 22];
-    R_tmp = R_tmp_tmp;
-    b_sind(&R_tmp);
-    b_cosd(&R_tmp_tmp);
-    g_obj_next_next_next_next_next_ =
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
-        X[idx_mat];
-    h_obj_next_next_next_next_next_ =
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
-        X[idx_mat + 11];
-    target_relative_idx_0 = R_tmp_tmp * g_obj_next_next_next_next_next_ +
-                            -R_tmp * h_obj_next_next_next_next_next_;
-    d = R_tmp * g_obj_next_next_next_next_next_ +
-        R_tmp_tmp * h_obj_next_next_next_next_next_;
-    cost_progress +=
-        (target_relative_idx_0 *
-             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
-         d * f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[5]) *
-            target_relative_idx_0 +
-        (target_relative_idx_0 *
-             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
-         d * f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[7]) *
-            d;
-  }
-  /*  quadratic cost for inputs */
-  cost_inputs = 0.0;
-  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
-  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
-  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
-  d3 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
-  for (idx_mat = 0; idx_mat < 11; idx_mat++) {
-    R_tmp = U[idx_mat + 11];
-    R_tmp_tmp = U[idx_mat];
-    cost_inputs += (R_tmp_tmp * d + R_tmp * d1) * R_tmp_tmp +
-                   (R_tmp_tmp * d2 + R_tmp * d3) * R_tmp;
-  }
-  /*  Unpack */
-  /*  weights is fed in as an array of  */
-  /*  [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL
-   * sofConstraints] */
-  b_cost_progress = 0.0;
-  for (idx_mat = 0; idx_mat < 11; idx_mat++) {
-    /*  Rotation matrix for transforming to the vehicle's local frame */
-    R_tmp_tmp = -X[idx_mat + 22];
-    R_tmp = R_tmp_tmp;
-    b_sind(&R_tmp);
-    b_cosd(&R_tmp_tmp);
-    g_obj_next_next_next_next_next_ =
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[0] -
-        X[idx_mat];
-    h_obj_next_next_next_next_next_ =
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f3[3] -
-        X[idx_mat + 11];
-    target_relative_idx_0 = R_tmp_tmp * g_obj_next_next_next_next_next_ +
-                            -R_tmp * h_obj_next_next_next_next_next_;
-    d = R_tmp * g_obj_next_next_next_next_next_ +
-        R_tmp_tmp * h_obj_next_next_next_next_next_;
-    b_cost_progress +=
-        (target_relative_idx_0 *
-             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[4] +
-         d * f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[5]) *
-            target_relative_idx_0 +
-        (target_relative_idx_0 *
-             f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[6] +
-         d * f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[7]) *
-            d;
-  }
-  /*  quadratic cost for inputs */
-  dx = 0.0;
-  d = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[0];
-  d1 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1];
-  d2 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[2];
-  d3 = f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[3];
-  for (idx_mat = 0; idx_mat < 11; idx_mat++) {
-    R_tmp = U[idx_mat + 11];
-    R_tmp_tmp = U[idx_mat];
-    dx += (R_tmp_tmp * d + R_tmp * d1) * R_tmp_tmp +
-          (R_tmp_tmp * d2 + R_tmp * d3) * R_tmp;
-  }
+  du = 1.0E-6 * Umv[0];
+  U[9] += du;
+  U[10] += du;
+  f = mpcCostFunction(
+      X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
+      f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+  U[9] -= du;
+  U[10] -= du;
+  a[18] = (f - fval) / du;
+  du = 1.0E-6 * Umv[1];
+  U[20] += du;
+  U[21] += du;
+  f = mpcCostFunction(
+      X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
+      f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+  U[20] -= du;
+  U[21] -= du;
+  a[19] = (f - fval) / du;
+  f = muDoubleScalarMax(1.0E-6, muDoubleScalarAbs(x[50])) * 1.0E-6;
   for (idx_current = 0; idx_current < 10; idx_current++) {
     d = 0.0;
     for (col = 0; col < 20; col++) {
@@ -439,13 +210,15 @@ real_T evalObjAndConstrAndDerivatives(
   memcpy(&varargout_2[0], &b_x[0], 40U * sizeof(real_T));
   memcpy(&varargout_2[40], &b_dv[0], 10U * sizeof(real_T));
   varargout_2[50] =
-      (((cost_progress + cost_inputs) +
-        (x[50] + de) *
-            f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1]) -
-       ((b_cost_progress + dx) +
-        (x[50] - de) *
-            f_obj_next_next_next_next_next_->runtimedata.Parameters.f4[1])) /
-      (2.0 * de);
+      (mpcCostFunction(
+           X, U, x[50] + f,
+           f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
+           f_obj_next_next_next_next_next_->runtimedata.Parameters.f4) -
+       mpcCostFunction(
+           X, U, x[50] - f,
+           f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
+           f_obj_next_next_next_next_next_->runtimedata.Parameters.f4)) /
+      (2.0 * f);
   for (idx_current = 0; idx_current < 51; idx_current++) {
     grad_workspace_data[idx_current] = varargout_2[idx_current];
   }

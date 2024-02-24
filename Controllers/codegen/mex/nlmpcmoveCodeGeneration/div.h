@@ -22,6 +22,9 @@
 
 /* Function Declarations */
 void binary_expand_op_4(real_T in1[10], const real_T in2[44], int32_T in3,
+                        int32_T in4);
+
+void binary_expand_op_5(real_T in1[10], const real_T in2[44], int32_T in3,
                         int32_T in4, real_T in5);
 
 /* End of code generation (div.h) */
