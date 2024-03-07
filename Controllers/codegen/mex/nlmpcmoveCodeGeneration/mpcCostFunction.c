@@ -17,7 +17,7 @@
 
 /* Function Definitions */
 real_T mpcCostFunction(const real_T X[44], const real_T U[22], real_T e,
-                       const real_T waypoints[6], const real_T weights[14])
+                       const real_T waypoints[4], const real_T weights[14])
 {
   real_T cost_inputs;
   real_T cost_progress;
@@ -38,7 +38,7 @@ real_T mpcCostFunction(const real_T X[44], const real_T U[22], real_T e,
   /*  quadratic cost for inputs */
   cost_inputs = 0.0;
   d = waypoints[0];
-  d1 = waypoints[3];
+  d1 = waypoints[2];
   d2 = weights[4];
   d3 = weights[0];
   d4 = weights[1];

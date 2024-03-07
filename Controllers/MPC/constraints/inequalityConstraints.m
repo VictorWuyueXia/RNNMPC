@@ -1,5 +1,6 @@
 function constraints = inequalityConstraints(X, U, e, data, ...
-    Ts, L, waypoints, weights, limits)
+    Ts, L, waypoints, weights, limits, ...
+    laneCoords, types)
     %% Make inequality constraints
     % [ieqCon1
     %  ieqCon2-e] <=0

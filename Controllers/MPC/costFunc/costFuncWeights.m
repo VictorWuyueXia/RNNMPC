@@ -1,12 +1,12 @@
 classdef costFuncWeights
     
     properties
-        input=[1 1];
-        progress=[1 1].*1e1;
-        laneKeeping=[1];
-        obsAvoid=[1e2];
-        RL=[1];
-        softConstraintPenalty=[1e-1];
+        input=diag([1 10]).*1e0;
+        progress=[1 0]'.*1e1;
+        laneKeeping=[1 0]'.*1e2;
+        obsAvoid=[1 0]';
+        RL=[1 0]';
+        softConstraintPenalty=[1e6 0]';
         % OutputVariables = [3 3];
         % ManipulatedVariablesRate = 0.1;
 

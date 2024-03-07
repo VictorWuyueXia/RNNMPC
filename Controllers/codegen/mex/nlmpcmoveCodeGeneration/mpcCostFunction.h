@@ -22,6 +22,6 @@
 
 /* Function Declarations */
 real_T mpcCostFunction(const real_T X[44], const real_T U[22], real_T e,
-                       const real_T waypoints[6], const real_T weights[14]);
+                       const real_T waypoints[4], const real_T weights[14]);
 
 /* End of code generation (mpcCostFunction.h) */

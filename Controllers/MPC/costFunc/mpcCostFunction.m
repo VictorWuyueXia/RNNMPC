@@ -1,13 +1,14 @@
 function cost = mpcCostFunction(X, U ,e, data, ...
-    Ts, L, waypoints, weights, limits)
+    Ts, L, waypoints, weights, limits, ...
+    laneCoords, types)
 
     % Unpack
-    % weights is fed in as an array of 
-    % [progress_x progress_y input_acc input_steer obsAvoid LaneKeeping RL sofConstraints]
+    % weights is fed in as an 2xN array of 
+    % [input(2x2) progress(2x1) laneKeeping(2x1) obsAvoid(2x1) RL(2x1) softConstraintPenalty(2x1)]
     cost_progress=progress_costFunc(X, waypoints, weights(1,3));
     cost_inputs=input_costFunc(U, weights(1:2,1:2));
+    cost_laneKeeping=laneKeeping_costFunc(X, laneCoords, weights(1,4));
     cost_obstacleAvoidance=0;
-    cost_laneKeeping=0;
     cost_RL=0;
     cost_softConstraints=e*weights(1,end);
     

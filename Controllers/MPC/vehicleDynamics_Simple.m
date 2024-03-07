@@ -1,5 +1,6 @@
 function nextState = vehicleDynamics_Simple(state, input, ...
-    Ts, L, waypoints, weights, limits)
+    Ts, L, waypoints, weights, limits, ...
+    laneCoords, types)
 
     % Unpack
     % [x_pos, y_pos, yaw_direction, speed]
