@@ -110,7 +110,8 @@ real_T evalObjAndConstrAndDerivatives(
   }
   fval = mpcCostFunction(
       X, U, x[50], f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
-      f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+      f_obj_next_next_next_next_next_->runtimedata.Parameters.f4,
+      f_obj_next_next_next_next_next_->runtimedata.Parameters.f6);
   memset(&a[0], 0, 20U * sizeof(real_T));
   for (idx_current = 0; idx_current < 44; idx_current++) {
     d = muDoubleScalarAbs(X[idx_current]);
@@ -129,7 +130,8 @@ real_T evalObjAndConstrAndDerivatives(
     X[col + 1] += dx;
     f = mpcCostFunction(
         X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4,
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f6);
     X[col + 1] -= dx;
     idx_current = col << 2;
     b_x[idx_current] = (f - fval) / dx;
@@ -137,21 +139,24 @@ real_T evalObjAndConstrAndDerivatives(
     X[col + 12] += dx;
     f = mpcCostFunction(
         X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4,
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f6);
     X[col + 12] -= dx;
     b_x[idx_current + 1] = (f - fval) / dx;
     dx = 1.0E-6 * d2;
     X[col + 23] += dx;
     f = mpcCostFunction(
         X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4,
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f6);
     X[col + 23] -= dx;
     b_x[idx_current + 2] = (f - fval) / dx;
     dx = 1.0E-6 * du;
     X[col + 34] += dx;
     f = mpcCostFunction(
         X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4,
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f6);
     X[col + 34] -= dx;
     b_x[idx_current + 3] = (f - fval) / dx;
   }
@@ -169,7 +174,8 @@ real_T evalObjAndConstrAndDerivatives(
     U[col] += du;
     f = mpcCostFunction(
         X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4,
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f6);
     U[col] -= du;
     idx_current = col << 1;
     a[idx_current] = (f - fval) / du;
@@ -177,7 +183,8 @@ real_T evalObjAndConstrAndDerivatives(
     U[col + 11] += du;
     d2 = mpcCostFunction(
         X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
-        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f4,
+        f_obj_next_next_next_next_next_->runtimedata.Parameters.f6);
     U[col + 11] -= du;
     a[idx_current + 1] = (d2 - fval) / du;
   }
@@ -186,7 +193,8 @@ real_T evalObjAndConstrAndDerivatives(
   U[10] += du;
   f = mpcCostFunction(
       X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
-      f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+      f_obj_next_next_next_next_next_->runtimedata.Parameters.f4,
+      f_obj_next_next_next_next_next_->runtimedata.Parameters.f6);
   U[9] -= du;
   U[10] -= du;
   a[18] = (f - fval) / du;
@@ -195,7 +203,8 @@ real_T evalObjAndConstrAndDerivatives(
   U[21] += du;
   f = mpcCostFunction(
       X, U, e, f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
-      f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+      f_obj_next_next_next_next_next_->runtimedata.Parameters.f4,
+      f_obj_next_next_next_next_next_->runtimedata.Parameters.f6);
   U[20] -= du;
   U[21] -= du;
   a[19] = (f - fval) / du;
@@ -213,11 +222,13 @@ real_T evalObjAndConstrAndDerivatives(
       (mpcCostFunction(
            X, U, x[50] + f,
            f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
-           f_obj_next_next_next_next_next_->runtimedata.Parameters.f4) -
+           f_obj_next_next_next_next_next_->runtimedata.Parameters.f4,
+           f_obj_next_next_next_next_next_->runtimedata.Parameters.f6) -
        mpcCostFunction(
            X, U, x[50] - f,
            f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
-           f_obj_next_next_next_next_next_->runtimedata.Parameters.f4)) /
+           f_obj_next_next_next_next_next_->runtimedata.Parameters.f4,
+           f_obj_next_next_next_next_next_->runtimedata.Parameters.f6)) /
       (2.0 * f);
   for (idx_current = 0; idx_current < 51; idx_current++) {
     grad_workspace_data[idx_current] = varargout_2[idx_current];

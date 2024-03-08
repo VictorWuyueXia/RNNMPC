@@ -1,6 +1,6 @@
 function [J_state, J_input] = vehicleDynamics_Simple_Jacobian(state, input, ...
     Ts, L, waypoints, weights, limits, ...
-    laneCoords, types)
+    laneBoundaryDetectionRange, laneCoords, types)
 
     % Unpack
     % [x_pos, y_pos, yaw_direction, speed]

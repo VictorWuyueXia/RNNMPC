@@ -1,6 +1,6 @@
 function constraints = inequalityConstraints(X, U, e, data, ...
     Ts, L, waypoints, weights, limits, ...
-    laneCoords, types)
+    laneBoundaryDetectionRange, laneCoords, types)
     %% Make inequality constraints
     % [ieqCon1
     %  ieqCon2-e] <=0
@@ -40,7 +40,7 @@ function constraints = inequalityConstraints(X, U, e, data, ...
         -v(2:N+1)-reverseMax+e]; % speed
     
     %% StateRate
-    yawRate=deg2rad(diff(yaw))/Ts;
+    yawRate=deg2rad(diff(yaw))./Ts;
     turnRadius=abs(v(2:N+1)./yawRate); % r=v/omega
     turnRadius(isnan(turnRadius))=1e3;% in case yawRate==0
     centriAcc=v(2:N+1).*2./turnRadius; % a=v^2/r
@@ -60,11 +60,11 @@ function constraints = inequalityConstraints(X, U, e, data, ...
         abs(steer(1:N))-steerMax]; % steer
 
     %% InputRate
-    linearJerk=diff(acc);
-    steerRate=diff(steer);
+    linearJerk=diff(acc(1:N+1))./Ts;
+    steerRate=diff(steer(1:N+1))./Ts;
 
-    inpuRateCon=[abs(linearJerk)-jerkMax-e; % linear jerk
-        abs(steerRate)-steerRateMax-e]; % steer rate
+    inpuRateCon=[abs(linearJerk)-jerkMax; % linear jerk
+        abs(steerRate)-steerRateMax]; % steer rate
 
     %%
     LaneKeepingCon=-1;

@@ -86,7 +86,8 @@ real_T evalObjAndConstr(int32_T c_obj_next_next_next_next_next_,
   }
   fval = mpcCostFunction(
       X, U, x[50], f_obj_next_next_next_next_next_->runtimedata.Parameters.f3,
-      f_obj_next_next_next_next_next_->runtimedata.Parameters.f4);
+      f_obj_next_next_next_next_next_->runtimedata.Parameters.f4,
+      f_obj_next_next_next_next_next_->runtimedata.Parameters.f6);
   *status = 1;
   y = muDoubleScalarIsNaN(fval);
   if (muDoubleScalarIsInf(fval) || y) {

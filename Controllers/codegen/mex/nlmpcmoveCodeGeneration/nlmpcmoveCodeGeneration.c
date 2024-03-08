@@ -1204,9 +1204,10 @@ void nlmpcmoveCodeGeneration(const real_T x[4], const real_T lastMV[2],
     e0 = 1.0E-5;
   }
   if (mpcCostFunction(info->Xopt, info->MVopt, e0 + 0.1,
-                      onlinedata->Parameters.f3, onlinedata->Parameters.f4) <=
+                      onlinedata->Parameters.f3, onlinedata->Parameters.f4,
+                      onlinedata->Parameters.f6) <=
       mpcCostFunction(info->Xopt, info->MVopt, e0, onlinedata->Parameters.f3,
-                      onlinedata->Parameters.f4)) {
+                      onlinedata->Parameters.f4, onlinedata->Parameters.f6)) {
     zUB[50] = 0.0;
   }
   ic[0] = 1.0;

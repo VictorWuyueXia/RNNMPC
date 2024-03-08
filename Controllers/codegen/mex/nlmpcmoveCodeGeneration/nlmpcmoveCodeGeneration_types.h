@@ -22,7 +22,7 @@
 typedef struct {
   real_T f1;
   real_T f2;
-  real_T f3[4];
+  real_T f3[12];
   real_T f4[14];
   real_T f5[7];
   real_T f6[22];

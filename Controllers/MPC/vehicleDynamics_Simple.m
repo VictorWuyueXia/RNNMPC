@@ -1,6 +1,6 @@
 function nextState = vehicleDynamics_Simple(state, input, ...
     Ts, L, waypoints, weights, limits, ...
-    laneCoords, types)
+    laneBoundaryDetectionRange, laneCoords, types)
 
     % Unpack
     % [x_pos, y_pos, yaw_direction, speed]
@@ -12,11 +12,17 @@ function nextState = vehicleDynamics_Simple(state, input, ...
     acc = input(1);
     steer = input(2);
 
-    % Vehicle dynamics equations - continuous
-    dx = v*cosd(yaw);
-    dy = v*sind(yaw);
-    dyaw = v*tand(steer)/L;
-    dv = acc;
+    % % Vehicle dynamics equations - continuous
+    % dx = v*cosd(yaw);
+    % dy = v*sind(yaw);
+    % dyaw = v*tand(steer)/L;
+    % dv = acc;
+
+    beta=atand(tand(steer)/2);
+    dyaw=v*cosd(beta)/L*tand(steer);
+    dx = v*cosd(yaw+beta);
+    dy = v*sind(yaw+beta);
+    dv=acc;
 
     % Euler's method
     x1=x+dx*Ts;
