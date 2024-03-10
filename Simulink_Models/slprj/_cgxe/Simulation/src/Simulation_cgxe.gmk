@@ -8,7 +8,7 @@ LD = $(CC)
  
 MODEL     = Simulation
 TARGET      = cgxe
-MODULE_SRCS   = m_SB9zHJYh0KMHD57S1kbsM.c m_Tuycm3s88pcXArSxTYlM2C.c m_GQSILvSPCTzISyZ7NYwLIF.c m_KqMOmJaMosVk1PSEjFkU4E.c m_pwNSslKdKNeB60Ahlj0yKH.c m_F0jeqmD47IABR1DbZqFEwB.c
+MODULE_SRCS   = m_EEtzHiXfiRvve9WcRzUZ0G.c m_Gy3UxPXLizbP5xlK4utmDC.c m_zcZA3UboXwgydm2Nw2xQGD.c m_A3OEzCGKN1ZkDLb8v5muLB.c m_NvR95jDAEIBMkarGcQ1raB.c m_UsfOBx8CwYjG2xn1VVBw3G.c
 MODEL_SRC  = Simulation_cgxe.c
 MODEL_REG = Simulation_cgxe_registry.c
 MAKEFILE    = Simulation_cgxe.gmk
@@ -16,14 +16,14 @@ MATLAB_ROOT  = c:\program files\matlab\r2023b\toolbox\stateflow\stateflow\..\..\
 BUILDARGS   = 
 #------------------------------ Include/Lib Path ------------------------------
  
-USER_INCLUDES = -I"C:\Users\Victor\documents\Projects\RNNMPC\simulink_models\slprj\_cgxe\simulation\src" -I"C:\Users\Victor\documents\Projects\RNNMPC\simulink_models" -I"C:\Users\Victor\Documents\Projects\RNNMPC\Simulink_Models\slprj\_cprj" 
+USER_INCLUDES = -I"C:\Users\administrator\documents\RNNMPC\simulink_models\slprj\_cgxe\simulation\src" -I"C:\Users\administrator\documents\RNNMPC\simulink_models" -I"C:\Users\Administrator\Documents\RNNMPC\Simulink_Models\slprj\_cprj" 
 AUX_INCLUDES = 
 MLSLSF_INCLUDES  = \
     -I"C:\Program Files\MATLAB\R2023b\extern\include" \
     -I"C:\Program Files\MATLAB\R2023b\simulink\include" \
     -I"C:\Program Files\MATLAB\R2023b\rtw\c\src" 
 
-THIRD_PARTY_INCLUDES = -I"C:\Users\Victor\Documents\Projects\RNNMPC\Simulink_Models\slprj\_cgxe\Simulation\src" -I"C:\Users\Victor\Documents\Projects\RNNMPC\Simulink_Models" -I"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64" 
+THIRD_PARTY_INCLUDES = -I"C:\Users\Administrator\Documents\RNNMPC\Simulink_Models\slprj\_cgxe\Simulation\src" -I"C:\Users\Administrator\Documents\RNNMPC\Simulink_Models" -I"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64" 
 
 INCLUDE_PATH = $(USER_INCLUDES) $(AUX_INCLUDES) $(MLSLSF_INCLUDES) $(COMPILER_INCLUDES) $(THIRD_PARTY_INCLUDES)
  
