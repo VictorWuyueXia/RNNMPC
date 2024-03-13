@@ -4,12 +4,12 @@ function cost = input_costFunc(X,U,weight)
     steer=U(:,2);
 
     v=X(:,4);
-    vacc=v.*acc;
+    vs=steer.*v;
 
-    weight_acc=weight(1,1).*eye(size(U,1));
-    weight_steer=weight(2,2).*eye(size(vacc,1));
+    weight_acc=weight(1,1).*eye(size(acc,1));
+    weight_steer=weight(2,2).*eye(size(steer,1));
 
     % quadratic cost for inputs
-    cost= vacc'*weight_acc*vacc + ...
-        steer'*weight_steer*steer;
+    cost= acc'*weight_acc*acc + ...
+        vs'*weight_steer*vs;
 end

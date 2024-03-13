@@ -7,20 +7,18 @@ function laneKeepingIneq = laneKeepingCon(X, e, ...
     % 2 for dashed lines
     % 5 for double solid lines
 
-    laneKeepingIneq=ones(2*size(X,1),1).*-1;
+    laneKeepingIneq=[-1;-1];
     y=X(:,2);
     boundaryTypes=laneVector(6,:);
     
     % If detected a full lane (two boundareis)
-    if all(boundaryTypes)
+    if NumLanes == 2 && ~isnan(boundaryTypes(2)) 
         % left boundary
         if boundaryTypes(1)==1 || boundaryTypes(1)==5 % Solid or double solid
             LB_l = laneVector(:,1);
             LB_l = coumputeBoundary(LB_l, X);
-            
-            % Stay inside, soft constraint if solid
-            % hard constraint if double solid 
-            laneKeepingIneq(1:size(X,1)) = LB_l-y-e*(boundaryTypes(1)==5); 
+
+            boundaryTypes(1) = LB_l-y-e; % soft constraint of staying inside
         end
 
         % right boundary
@@ -28,9 +26,7 @@ function laneKeepingIneq = laneKeepingCon(X, e, ...
             LB_r = laneVector(:,2);
             LB_r = coumputeBoundary(LB_r, X);
 
-            % Stay inside, soft constraint if solid
-            % hard constraint if double solid 
-            laneKeepingIneq(size(X,1)+1:end) = y-LB_r-e*(boundaryTypes(2)==5);
+            boundaryTypes(2) = y-LB_r-e; % soft constraint of staying inside
         end
     end
 end

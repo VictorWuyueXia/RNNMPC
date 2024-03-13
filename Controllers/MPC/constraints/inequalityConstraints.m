@@ -66,9 +66,12 @@ function constraints = inequalityConstraints(X, U, e, data, ...
     inpuRateCon=[abs(linearJerk)-jerkMax; % linear jerk
         abs(steerRate)-steerRateMax]; % steer rate
 
-    %%
-    LaneKeepingCon=-1;
+    %% Lane Keeping
+    LaneKeepingCon=laneKeepingCon(X, e, NumLanes, laneVector);
+
+    %% Obstacle Avoidance
     obsAvoidCon=-1;
     
+    %% Sum
     constraints= [stateCon;stateRateCon;inputCon;inpuRateCon;LaneKeepingCon;obsAvoidCon];
 end
