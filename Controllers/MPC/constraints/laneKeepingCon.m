@@ -20,7 +20,7 @@ function laneKeepingIneq = laneKeepingCon(X, e, ...
             
             % Stay inside, soft constraint if solid
             % hard constraint if double solid 
-            laneKeepingIneq(1:size(X,1)) = LB_l-y-e*(boundaryTypes(1)==5); 
+            laneKeepingIneq(1:size(X,1)) = y-LB_l-e*(boundaryTypes(1)==5); 
         end
 
         % right boundary
@@ -30,7 +30,7 @@ function laneKeepingIneq = laneKeepingCon(X, e, ...
 
             % Stay inside, soft constraint if solid
             % hard constraint if double solid 
-            laneKeepingIneq(size(X,1)+1:end) = y-LB_r-e*(boundaryTypes(2)==5);
+            laneKeepingIneq(size(X,1)+1:end) = LB_r-y-e*(boundaryTypes(2)==5);
         end
     end
 end
