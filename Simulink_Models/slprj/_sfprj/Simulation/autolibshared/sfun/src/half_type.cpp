@@ -152,8 +152,8 @@ real16_T::real16_T(double a)
   uint16_T OutSign;
   uint16_T outExponent;
   uint16_T outMantissa;
-  uint16_T one = 1U;
-  uint8_T endianAdjustment = *((uint8_T*)((void*)&one));
+  uint32_T one = 1U;
+  uint16_T endianAdjustment = *((uint16_T*)((void*)&one));
   aBitsPointer = (uint32_T *)((void*)&a);/* Type punning input as an uint32_T */
   if (endianAdjustment) {
     aMantissaSecondChunk = *(aBitsPointer++);

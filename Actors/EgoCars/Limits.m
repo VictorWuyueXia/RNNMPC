@@ -7,7 +7,7 @@ classdef Limits
         accMAX = 8; % m/s^2
         jerkMAX = 8;
         brakeMAX = 15; % m/s^2
-        turnAngleMAX = 25; % max turn angle in radian
+        turnAngleMAX = 15; % max turn angle in radian
         turnAngleRateMAX = 60; % max turn angle change rate in radian
         
         limits = []; % Vectorized Arrays

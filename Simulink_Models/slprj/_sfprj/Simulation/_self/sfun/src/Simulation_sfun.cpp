@@ -1,6 +1,7 @@
 /* Include files */
 
 #include "Simulation_sfun.h"
+#include "c4_Simulation.h"
 
 /* Forward Declarations */
 /* Type Definitions */
@@ -26,6 +27,11 @@ void Simulation_terminator()
 unsigned int sf_Simulation_method_dispatcher(SimStruct *simstructPtr, unsigned
   int chartFileNumber, const char* specsCksum, int_T method, void *data)
 {
+  if (chartFileNumber==4) {
+    c4_Simulation_method_dispatcher(simstructPtr, method, data);
+    return 1;
+  }
+
   return 0;
 }
 
@@ -57,6 +63,13 @@ unsigned int sf_Simulation_process_check_sum_call( int nlhs, mxArray * plhs[],
       unsigned int chartFileNumber;
       chartFileNumber = (unsigned int)mxGetScalar(prhs[2]);
       switch (chartFileNumber) {
+       case 4:
+        {
+          extern void sf_c4_Simulation_get_check_sum(mxArray *plhs[]);
+          sf_c4_Simulation_get_check_sum(plhs);
+          break;
+        }
+
        default:
         ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(0.0);
         ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(0.0);
@@ -111,6 +124,19 @@ unsigned int sf_Simulation_get_eml_resolved_functions_info( int nlhs, mxArray *
     instanceChksum[(sizeof(instanceChksum)/sizeof(char)-1)] = '\0';
     chartFileNumber = (unsigned int)mxGetScalar(prhs[1]);
     switch (chartFileNumber) {
+     case 4:
+      {
+        if (strcmp(instanceChksum, "siAFjvTkQ8mpDMAAbKudVC") == 0) {
+          extern const mxArray *sf_c4_Simulation_get_eml_resolved_functions_info
+            (void);
+          mxArray *persistentMxArray = (mxArray *)
+            sf_c4_Simulation_get_eml_resolved_functions_info();
+          plhs[0] = mxDuplicateArray(persistentMxArray);
+          mxDestroyArray(persistentMxArray);
+          break;
+        }
+      }
+
      default:
       plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
     }
@@ -146,6 +172,15 @@ unsigned int sf_Simulation_third_party_uses_info( int nlhs, mxArray * plhs[],
     unsigned int chartFileNumber;
     chartFileNumber = (unsigned int)mxGetScalar(prhs[1]);
     switch (chartFileNumber) {
+     case 4:
+      {
+        if (strcmp(tpChksum, "siAFjvTkQ8mpDMAAbKudVC") == 0) {
+          extern mxArray *sf_c4_Simulation_third_party_uses_info(void);
+          plhs[0] = sf_c4_Simulation_third_party_uses_info();
+          break;
+        }
+      }
+
      default:
       plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
     }
@@ -174,6 +209,15 @@ unsigned int sf_Simulation_jit_fallback_info( int nlhs, mxArray * plhs[], int
     unsigned int chartFileNumber;
     chartFileNumber = (unsigned int)mxGetScalar(prhs[1]);
     switch (chartFileNumber) {
+     case 4:
+      {
+        if (strcmp(tpChksum, "siAFjvTkQ8mpDMAAbKudVC") == 0) {
+          extern mxArray *sf_c4_Simulation_jit_fallback_info(void);
+          plhs[0] = sf_c4_Simulation_jit_fallback_info();
+          break;
+        }
+      }
+
      default:
       plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
     }
@@ -202,6 +246,17 @@ unsigned int sf_Simulation_get_post_codegen_info( int nlhs, mxArray * plhs[],
     unsigned int chartFileNumber;
     chartFileNumber = (unsigned int)mxGetScalar(prhs[1]);
     switch (chartFileNumber) {
+     case 4:
+      {
+        if (strcmp(tpChksum, "siAFjvTkQ8mpDMAAbKudVC") == 0) {
+          const char *sf_c4_Simulation_get_post_codegen_info(void);
+          const char* encoded_post_codegen_info =
+            sf_c4_Simulation_get_post_codegen_info();
+          plhs[0] = sf_mex_decode(encoded_post_codegen_info);
+          break;
+        }
+      }
+
      default:
       plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
     }
@@ -230,6 +285,15 @@ unsigned int sf_Simulation_updateBuildInfo_args_info( int nlhs, mxArray * plhs[]
     unsigned int chartFileNumber;
     chartFileNumber = (unsigned int)mxGetScalar(prhs[1]);
     switch (chartFileNumber) {
+     case 4:
+      {
+        if (strcmp(tpChksum, "siAFjvTkQ8mpDMAAbKudVC") == 0) {
+          extern mxArray *sf_c4_Simulation_updateBuildInfo_args_info(void);
+          plhs[0] = sf_c4_Simulation_updateBuildInfo_args_info();
+          break;
+        }
+      }
+
      default:
       plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
     }
