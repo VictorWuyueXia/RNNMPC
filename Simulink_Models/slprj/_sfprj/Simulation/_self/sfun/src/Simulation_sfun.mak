@@ -6,7 +6,7 @@ CPU = AMD64
 
 MODEL     = Simulation
 TARGET      = sfun
-MODULE_SRCS   = c4_Simulation.cpp half_type.cpp
+MODULE_SRCS   = c2_Simulation.cpp c4_Simulation.cpp half_type.cpp
 MODEL_SRC  = Simulation_sfun.cpp
 MODEL_REG = Simulation_sfun_registry.cpp
 MAKEFILE    = Simulation_sfun.mak
