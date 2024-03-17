@@ -1,18 +1,26 @@
-function cost = progressTerm(X, waypoints, weight)
+function cost = progressTerm(X, target, weight)
     % waypoints are in body frame
-    target=waypoints(1,1:2);
     target=repmat(target, [size(X,1),1]);
-
+    
+    % state positions
     position=X(:,1:2);
 
-    dPosition=target-position;
-
+    % relative position to the target waypoint
+    dPosition=position - target;
+    
+    % relative distance away with the waypoint
     distance=vecnorm(dPosition')';
+    
+    % normalize all the distances to 0-1
+    distance_normalized=distance./distance(1);
+    distance_normalized(isnan(distance_normalized))=0;
+    
+    % Each step's progress, as how much it contributes to
+    % the overall distance left, from 0-1
+    progress=diff(distance_normalized);
 
-    progress=diff(distance);
-
-    % Linear cost
-    progress_sum=sum(-progress);
-    cost = weight*progress_sum;
+    % quadratic cost
+    progress_left=1-sum(progress);
+    cost = progress_left' * weight * progress_left;
 end
 

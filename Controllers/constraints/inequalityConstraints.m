@@ -36,36 +36,39 @@ function constraints = inequalityConstraints(X, U, e, data, ...
     %% State 
     % [x y yaw speed(v)]
 
-    stateCon=[v(2:N+1)-speedMax-e;
-        -v(2:N+1)-reverseMax+e]; % speed
+    stateCon=[v-speedMax-e;
+        -v+reverseMax-e]; % speed
     
     %% StateRate
-    yawRate=deg2rad(diff(yaw))./Ts;
-    turnRadius=abs(v(2:N+1)./yawRate); % r=v/omega
-    turnRadius(isnan(turnRadius))=1e3;% in case yawRate==0
-    centriAcc=v(2:N+1).*2./turnRadius; % a=v^2/r
-    centriAcc(isnan(centriAcc))=0;% in case turnRadius==0
-    % totalAcc=(centriAcc.^2 + linearAcc.^2).*0.5; % a=sqrt(al^2+ar^2)
+
+    % yawRate=deg2rad(diff(yaw))./Ts;
+    % turnRadius=abs(v(2:N+1)./yawRate); % r=v/omega
+    % turnRadius(isnan(turnRadius))=1e3;% in case yawRate==0
+    % centriAcc=v(2:N+1).*2./turnRadius; % a=v^2/r
+    % centriAcc(isnan(centriAcc))=0;% in case turnRadius==0
+    % % totalAcc=(centriAcc.^2 + linearAcc.^2).*0.5; % a=sqrt(al^2+ar^2)
+    % 
+    % centriJerk=diff(centriAcc);
+    % 
+    % stateRateCon=[abs(centriAcc)-accMax-e; % G-force
+    %     abs(centriJerk)-jerkMax-e]; % G-force jerk
     
-    centriJerk=diff(centriAcc);
-
-    stateRateCon=[abs(centriAcc)-accMax-e; % G-force
-        abs(centriJerk)-jerkMax-e]; % G-force jerk
-
+    stateRateCon=-1;
 
     %% Input 
     % [acc steer(deg)]
     inputCon=[acc-accMax; % linear acc
         -brakeMax-acc;
-        abs(steer(1:N))-steerMax]; % steer
+        steer.^2-steerMax.^2]; % steer
 
     %% InputRate
-    linearJerk=diff(acc(1:N+1))./Ts;
-    steerRate=diff(steer(1:N+1))./Ts;
+    % linearJerk=diff(acc(1:N+1))./Ts;
+    % steerRate=diff(steer(1:N+1))./Ts;
+    % 
+    % inpuRateCon=[abs(linearJerk)-jerkMax; % linear jerk
+    %     abs(steerRate)-steerRateMax]; % steer rate
 
-    inpuRateCon=[abs(linearJerk)-jerkMax; % linear jerk
-        abs(steerRate)-steerRateMax]; % steer rate
-
+    inpuRateCon=-1;
     %% Lane Keeping
     LaneKeepingCon=laneKeepingCon(X, e, NumLanes, laneVector);
 

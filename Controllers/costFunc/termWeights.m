@@ -6,7 +6,7 @@ classdef termWeights
         laneKeeping=ones(2,1);
         obsAvoid=ones(2,1);
         RL=ones(2,1);
-        softConstraintPenalty=[1e6 0]';
+        softConstraintPenalty=[1e3 0]';
 
         weights
     end

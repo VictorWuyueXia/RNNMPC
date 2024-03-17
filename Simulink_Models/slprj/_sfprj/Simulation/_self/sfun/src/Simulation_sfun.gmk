@@ -8,7 +8,7 @@ LD = $(CC) -f "C:\Users\Victor\AppData\Roaming\MathWorks\MATLAB\R2023b\mex_C++_w
  
 MODEL     = Simulation
 TARGET      = sfun
-MODULE_SRCS   = half_type.cpp
+MODULE_SRCS   = c2_Simulation.cpp c4_Simulation.cpp half_type.cpp
 MODEL_SRC  = Simulation_sfun.cpp
 MODEL_REG = Simulation_sfun_registry.cpp
 MAKEFILE    = Simulation_sfun.gmk
