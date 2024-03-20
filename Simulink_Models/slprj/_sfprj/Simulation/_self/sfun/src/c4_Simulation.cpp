@@ -141,7 +141,7 @@ static void mdl_setup_runtime_resources_c4_Simulation
     &chartInstance->c4_IsSequenceViewerPresent, 0, 0,
     &chartInstance->c4_mlFcnLineNumber, &chartInstance->c4_IsHeatMapPresent, 0);
   covrtCreateStateflowInstanceData(chartInstance->c4_covrtInstance, 1U, 0U, 1U,
-    14U);
+    27U);
   covrtChartInitFcn(chartInstance->c4_covrtInstance, 0U, false, false, false);
   covrtStateInitFcn(chartInstance->c4_covrtInstance, 0U, 0U, false, false, false,
                     0U, &c4_decisionTxtStartIdx, &c4_decisionTxtEndIdx);
@@ -403,10 +403,10 @@ static void init_simulink_io_address(SFc4_SimulationInstanceStruct
 /* SFunction Glue Code */
 void sf_c4_Simulation_get_check_sum(mxArray *plhs[])
 {
-  ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(3898346802U);
-  ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(3144069466U);
-  ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(390652823U);
-  ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(2061216810U);
+  ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(744138615U);
+  ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(2870496917U);
+  ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(1704109315U);
+  ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(3831055955U);
 }
 
 mxArray *sf_c4_Simulation_third_party_uses_info(void)
@@ -459,7 +459,7 @@ static const mxArray *sf_get_sim_state_info_c4_Simulation(void)
 
 static const char* sf_get_instance_specialization(void)
 {
-  return "sv1XYvRnUbaktwvuxbspKCH";
+  return "sQAjcnQ9fLbyRcErvbHTNHC";
 }
 
 static void sf_opaque_initialize_c4_Simulation(void *chartInstanceVar)
@@ -550,30 +550,30 @@ const char* sf_c4_Simulation_get_post_codegen_info(void)
 {
   int i;
   const char* encStrCodegen [21] = {
-    "eNrdWE+P20QUn0TLilbtag9IcEBijxyKRAtIHKDs1k7aiF121WQLVCqrif0SjzIeu/PHSThVvfX",
-    "Ad+DEJ+DGF+Aj8Ak4c+TIG8dJgzckHqcqbS05ztj+zXvvN+/fmDQ6JwSPPTwP3iNkF69v49kks+",
-    "OtYtxYOmf3d8gXxfj3q4QESQhDEF0zGLAJcTuEic+opLEi7oegMdwHlXCjWSI6YpBUxzIxAAkiw",
-    "AnSRGonuYrFhjMxahsRWMnq24gFUTdKDA/v4IQ0PBV8+l9yU6PPUKLPJAS6DRDqSCZmGLU5Ha5n",
-    "QeqxF0EwUiZ25kqB7prUmqpODNcs5dCaQNARSlNkQW2wt6upBk9P3Ei29qruHJ3EKWdUVOc6oqo",
-    "LKXqHhvM0xN9To5G9inJRXp8JqhPJKG/F3IuorIo946jnCbo1d+ZZx9qHvhkOmRhadqWJQaD96C",
-    "cVuBp4SQaSDuFUuMkNrHWtSb7AC7+siNUshgdUHgXoBwpCtxhEB1ZdiksLPZzGCQuC9jl0VE+yD",
-    "NfINW90bCjVyhsmnnmSqoXN5bYyXFVVU247EB7lXLlhe0l6DBnwXL5PNa2Bncl3ACvFwl6C3mEj",
-    "1zH6jWCPDRRYLxEhq+6VWQmVF4lvMOFXgLPYhgGESPNC9cVEm+LIKJ3EHoa+f3xcUd5lbEdokAM",
-    "aQOV8LSlTgArnfuUoN2TKBhKikSWdW1l5hlkM1oISNTDCHydyhBy7FobnXNlIcENDOAQfNORJro",
-    "Xe/YByU1HnWGFWtu5xrjDLuslFrI2fWuCABhGEtgYyDieYZ3GCqkusbPk8Qmszpqc+qECytGokG",
-    "UzoWPwsS71pCudiJJKxaMsk7hZdzBq/AsCsQaXAUnYHS6mctlH5alpLeNzLs7trw2B5pprTvvWN",
-    "uyCwGlpbbfWmAUZVS2C7iQptg+2yH7EdEYopjS3gtJXHQJj3wYfkeR+8s6IPvr7UB+8X4+DTi5z",
-    "MeZG383y8NM+1Cv00qYAjl3BkgZtfP1zCN1bIJUvXsrwrzfV6NvFfo8At83S9JGenhNstuHry6w",
-    "/+M//LX54+evjbT3/eeLSN/J+bbvuVvWL8/rxXWmTm7FLysu/e2+AH75b8wI5VdvO777P74rxPR",
-    "3qcmUlfpV979/L5/mqs17dZ0nd+/8D2Zxi4eR6QQScs9j12TM2sH7fzf76k7+4GPq4s+RNq9tV2",
-    "+HcOy+u4swG/j/8mJb+tL//gcDt8/fVm6oLarAwX/84Aey8gvlxxr4u8N13PF2lflbrxsnHkJeO",
-    "2tc+1Hr7u76/Lw6T0/v4rbEf5WrcvetXs+oO49S0fFOPbi724FzEertgNFI+xYR+sevqG+Pffjv",
-    "zN63bL8ld8AH34yZGgfIrt/2x7Vdw+k/bb2+KRBKpW77H+j3pCVvTdq/qUa6X4tuMxE2EyVh/dv",
-    "PXZrW3q0z8L+AVv",
+    "eNrdWD9v20YUPwmO0RSx4SFAMgRoxi4BCrRDAhStFUqqBdixE8op0MU4HR/Fq49H5v7IUj9Nx36",
+    "GfoLOnQJkydypY7v1HUUpKq1KPClIkxCgqCP5u/fe796/I2n0Tgge+3jevUvILl4/wbNJpseNct",
+    "xYOKf3d8jX5fi3TwlhWQRDkKGNYz4mfoe06RlVNNXE/5A0hWegM2ENz2RPxll9LJcxKJAMJ8gzZ",
+    "bzkap5aweVl10rmJOvvE86SMMmsiB7jhDQ6lWLyX3Jza85QYpsrYKYLEJlEZXaYdAUdrmZBmasg",
+    "AXapberNlQYT2tyZqk+sMDwX0BkD60ltKLKg19gbGmogMGM/kp29OpyhszQXnMr6XCdUh5Cjdxg",
+    "4zyP8PbUG2aspF+UNuKQmU5yKTiqChKq62DOBep6gWwtvnk1q2jCwwyGXQ8eusilItB/9pAZXcZ",
+    "CNQNEhnEo/ucxZ1xkXCzz3y5pYw1N4TlWLoR9oiPxiEB1YhxSXFvo4jRcWJB0I6Om+4iNcI9+80",
+    "XOhtFHesOnUk/RG2EJuZ4SrqjeU22UyoEJoP2w/y49hBKKQ36aGboCdyvcAa82jfobe4SLXM/qt",
+    "5C8slNggkxGv75WjCqooEk8w4deA89SFAURI81z1+UTr4shqk6UBhn77+LimvOvYnjSgYsqgdr5",
+    "WlGtAhQu/8pQbce0CCdHIkimsrD3DNAY3ghIdW9m+ytQlcuxbGN5w5SLBDw3RENpgoEhyHfTu51",
+    "TYmjqnGrOyc49zjVnWTy5iXfxsBGaUJRC5GsgFnGCexQnqLrF25bOF1o64mbRBM8XzupFkMaFj8",
+    "XMs9Sc5nMtLmV3JrsrSsOxiVvgVAGYNqiSWssdYStWki8rX01rBi36R3X0bBsczNYIOnG98BxKr",
+    "obPVVW/KMKo6EttNVGgbbMh/wnZEaq4NtoCTThEDUdEHH5I3ffDOkj54b6EPPijH7KuLgsxZkXf",
+    "zfLEwz60a/TSpgSPXcGSOm10/X8A3lsglC9eqvJvN1Xo28V+jxC3ytFeRs1PB7ZZc/d3Kfn19e0",
+    "/fuvPo1e9//HK1jfyfm377lf1yfG/WK80z8+ha8nLvHq3xgzsVP3Bj/bT1I5NPH8XHg8kz1lGjw",
+    "VH/yVFQzPdnY7W+zYq+s/v3XX+GgVvkAcV6UbnvcWNqp/24m//hgr67a/i4ueBPqNm32+FvH1bX",
+    "cWcN/gD/jSt+u7n8+4fb4Tdfb64vqMvKcPHvDLD/FuLLF/ehyPvY9Xyb9tWpG+8aR94xblv7fOv",
+    "hh/7+qjxMKu8fvMd2VK+b9kXvm10viV/f8lk5/ma+Fw8SLqIlu4HyMTbs8bKnH4l//+XJ36xudx",
+    "x/5QfQH75sSSom2P5Pt1fl7TPlvr3NHymgevke6/+oJ8v6pGV9yo1KfLvxeb/74OEWdekfbOQCO",
+    "Q==",
     ""
   };
 
-  static char newstr [1441] = "";
+  static char newstr [1429] = "";
   newstr[0] = '\0';
   for (i = 0; i < 21; i++) {
     strcat(newstr, encStrCodegen[i]);
@@ -586,10 +586,10 @@ static void mdlSetWorkWidths_c4_Simulation(SimStruct *S)
 {
   const char* newstr = sf_c4_Simulation_get_post_codegen_info();
   sf_set_work_widths(S, newstr);
-  ssSetChecksum0(S,(1147057280U));
-  ssSetChecksum1(S,(2789033097U));
-  ssSetChecksum2(S,(3143261570U));
-  ssSetChecksum3(S,(1563223693U));
+  ssSetChecksum0(S,(3127853561U));
+  ssSetChecksum1(S,(1930237152U));
+  ssSetChecksum2(S,(3677951756U));
+  ssSetChecksum3(S,(2007558866U));
 }
 
 static void mdlRTW_c4_Simulation(SimStruct *S)

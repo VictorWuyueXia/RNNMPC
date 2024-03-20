@@ -42,33 +42,33 @@ static real_T _sfTime_;
 static emlrtMCInfo c3_emlrtMCI = { 82, /* lineNo */
   5,                                   /* colNo */
   "power",                             /* fName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\eml\\lib\\matlab\\ops\\power.m"/* pName */
+  "/Applications/MATLAB_R2023b.app/toolbox/eml/lib/matlab/ops/power.m"/* pName */
 };
 
 static emlrtMCInfo c3_b_emlrtMCI = { 13,/* lineNo */
   9,                                   /* colNo */
   "sqrt",                              /* fName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\eml\\lib\\matlab\\elfun\\sqrt.m"/* pName */
+  "/Applications/MATLAB_R2023b.app/toolbox/eml/lib/matlab/elfun/sqrt.m"/* pName */
 };
 
 static emlrtRSInfo c3_emlrtRSI = { 71, /* lineNo */
   "power",                             /* fcnName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\eml\\lib\\matlab\\ops\\power.m"/* pathName */
+  "/Applications/MATLAB_R2023b.app/toolbox/eml/lib/matlab/ops/power.m"/* pathName */
 };
 
 static emlrtRSInfo c3_b_emlrtRSI = { 1,/* lineNo */
   "automlvehdynbicycle",               /* fcnName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\autoblks\\autoblksshared\\automlvehdynbicycle.p"/* pathName */
+  "/Applications/MATLAB_R2023b.app/toolbox/autoblks/autoblksshared/automlvehdynbicycle.p"/* pathName */
 };
 
 static emlrtRSInfo c3_c_emlrtRSI = { 1,/* lineNo */
   "automldiv0protect",                 /* fcnName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\autoblks\\autoblksshared\\automldiv0protect.p"/* pathName */
+  "/Applications/MATLAB_R2023b.app/toolbox/autoblks/autoblksshared/automldiv0protect.p"/* pathName */
 };
 
 static emlrtRSInfo c3_d_emlrtRSI = { 1,/* lineNo */
   "automlvehdynftiresat",              /* fcnName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\autoblks\\autoblksshared\\automlvehdynftiresat.p"/* pathName */
+  "/Applications/MATLAB_R2023b.app/toolbox/autoblks/autoblksshared/automlvehdynftiresat.p"/* pathName */
 };
 
 static emlrtRSInfo c3_e_emlrtRSI = { 5,/* lineNo */
@@ -79,51 +79,51 @@ static emlrtRSInfo c3_e_emlrtRSI = { 5,/* lineNo */
 static emlrtRTEInfo c3_emlrtRTEI = { 1,/* lineNo */
   1,                                   /* colNo */
   "automldiv0protect",                 /* fName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\autoblks\\autoblksshared\\automldiv0protect.p"/* pName */
+  "/Applications/MATLAB_R2023b.app/toolbox/autoblks/autoblksshared/automldiv0protect.p"/* pName */
 };
 
 static emlrtRTEInfo c3_b_emlrtRTEI = { 71,/* lineNo */
   5,                                   /* colNo */
   "power",                             /* fName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\eml\\lib\\matlab\\ops\\power.m"/* pName */
+  "/Applications/MATLAB_R2023b.app/toolbox/eml/lib/matlab/ops/power.m"/* pName */
 };
 
 static emlrtRTEInfo c3_c_emlrtRTEI = { 1,/* lineNo */
   1,                                   /* colNo */
   "automlvehdynftiresat",              /* fName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\autoblks\\autoblksshared\\automlvehdynftiresat.p"/* pName */
+  "/Applications/MATLAB_R2023b.app/toolbox/autoblks/autoblksshared/automlvehdynftiresat.p"/* pName */
 };
 
 static emlrtRTEInfo c3_d_emlrtRTEI = { 364,/* lineNo */
   24,                                  /* colNo */
   "find",                              /* fName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\eml\\lib\\matlab\\elmat\\find.m"/* pName */
+  "/Applications/MATLAB_R2023b.app/toolbox/eml/lib/matlab/elmat/find.m"/* pName */
 };
 
 static emlrtRTEInfo c3_e_emlrtRTEI = { 39,/* lineNo */
   5,                                   /* colNo */
   "find",                              /* fName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\eml\\lib\\matlab\\elmat\\find.m"/* pName */
+  "/Applications/MATLAB_R2023b.app/toolbox/eml/lib/matlab/elmat/find.m"/* pName */
 };
 
 static emlrtRTEInfo c3_f_emlrtRTEI = { 1,/* lineNo */
   1,                                   /* colNo */
   "automlsatfunc",                     /* fName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\autoblks\\autoblksshared\\automlsatfunc.p"/* pName */
+  "/Applications/MATLAB_R2023b.app/toolbox/autoblks/autoblksshared/automlsatfunc.p"/* pName */
 };
 
 static emlrtECInfo c3_emlrtECI = { -1, /* nDims */
   1,                                   /* lineNo */
   1,                                   /* colNo */
   "automldiv0protect",                 /* fName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\autoblks\\autoblksshared\\automldiv0protect.p"/* pName */
+  "/Applications/MATLAB_R2023b.app/toolbox/autoblks/autoblksshared/automldiv0protect.p"/* pName */
 };
 
 static emlrtECInfo c3_b_emlrtECI = { -1,/* nDims */
   1,                                   /* lineNo */
   1,                                   /* colNo */
   "automlvehdynftiresat",              /* fName */
-  "C:\\Program Files\\MATLAB\\R2023b\\toolbox\\autoblks\\autoblksshared\\automlvehdynftiresat.p"/* pName */
+  "/Applications/MATLAB_R2023b.app/toolbox/autoblks/autoblksshared/automlvehdynftiresat.p"/* pName */
 };
 
 static char_T c3_cv[30] = { 'C', 'o', 'd', 'e', 'r', ':', 't', 'o', 'o', 'l',
@@ -2093,10 +2093,10 @@ static void init_simulink_io_address(SFc3_autolibsharedInstanceStruct
 /* SFunction Glue Code */
 void sf_c3_autolibshared_get_check_sum(mxArray *plhs[])
 {
-  ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(1925249744U);
-  ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(2117430822U);
-  ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(3505980942U);
-  ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(396791046U);
+  ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(637185045U);
+  ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(3535399856U);
+  ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(2514945469U);
+  ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(939739806U);
 }
 
 mxArray *sf_c3_autolibshared_third_party_uses_info(void)
@@ -2152,7 +2152,7 @@ static const mxArray *sf_get_sim_state_info_c3_autolibshared(void)
 
 static const char* sf_get_instance_specialization(void)
 {
-  return "sBK4YlUqpl4vKgD6zQmDRgF";
+  return "s9iEywxdptcYNQHjuXtNorD";
 }
 
 static void sf_opaque_initialize_c3_autolibshared(void *chartInstanceVar)
@@ -2247,32 +2247,32 @@ const char* sf_c3_autolibshared_get_post_codegen_info(void)
 {
   int i;
   const char* encStrCodegen [23] = {
-    "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",
+    "eNrdWU1v40QYnlZt1a6g2wMS0gotK05ckEC9LBJi0ybxNlI/AkmXj0s1td/EQ8dj73ykDacekPg",
+    "BSNw481f4CRz5ARw4Ik684zjZ1AnNjLtis2vJdcf2M+/7vF/zjkNWWkcEj20844eEbOB1E89VMj",
+    "rWi/HK1Dm6v0Y+K8a/3SMkTCPog+iYXo9dEb9DmKRNJU0U8T8ETeBLUCk3mqWiJXqpO5aJHkgQI",
+    "U6QpVJ7yVUsMZyJi8CI0EpWX8UsjDtxani0jxPS6ETw4X/JzYxuo8QGkxDqACDSsUxNPw447d9u",
+    "Bakv6zGEF8ok3rZSoDsms1TVkeGaZRyaVxC2hNIUraAW8O1oqqGur/yMbPmqzhidJhlnVLjbOqa",
+    "qAxlGh4bTLMK/J0aj9RzlorxzJqhOJaO8mfB6TKUrts1RzyMMa+5tZ53oBpybfp+JvrWuNAkI5I",
+    "9x4mCrXj0dgKR9OBF+ckPLrnmVO3gSl45YzRJ4RuVeiHGgIPLLQQxg1aHoWujiNF5YEPScQ0t1J",
+    "Rugj3zrRsumUqW6YZJRJKlK2Fxuc4BeVRXlBqGoU86VH7abZocwAJ7Lb1BNK2BH8j3ASrGom2J0",
+    "2Mz1zH4j2HMDBbaeioi5R+WghMoXiWMs+A5wltg0gAjNPFF9MtGiPDJKp0kdU79xeOgobxbbEhp",
+    "kj4bgXK8lZQpQ4TyuPOVGTNlEQjRaSecsnWcY5WAlKFE9IxqXqbxAG/suDC9sZTPBDw1RHxqgIS",
+    "9yTYzuZ5QbR50ThVXZhsepwirrJxexNn8qgUMaxhDZNZBxOMI6ixO4uljZ5XMP2Q6YHjZAhZJlr",
+    "plksKDj4met1B1mcCouRHopApkmnaKLuSWuALBqUClwKdvHpVQOA1TeTWsJz7t5dfdtGKydqeb0",
+    "3MbGUxC4GlqudvWmIWZVU2C7iQrdBdth32M7IhRTGlvAYTPPgSjvg2vkRR+8NqcP3pnqg3eKM9w",
+    "9o0annJ0rlASRnefjqXnecuind4o+/DYcmcGNju2p64dT+JU5csnUtcx3a/Xm+/dL8lbH924eM/",
+    "O8XZK7Vppno7Dbj//8fPzBr90fdv9sb/7y0/rDMv+yPisz+qzk/1vcH5t++5ftYvzeuHeaVOrBT",
+    "DGz7x4siIt3S3Fhx+pT1hxeXkWZDr85/uLgO/O1Pk5lY+TnBfreK+k7vv/I9muYyHldkGErKvZB",
+    "dkzNqD+38z+e0ndjgT22puKLkL+e3Al//bRWxs+z13rJXnYc7KfRsBTPr4wH2a+V43Eej7UbPNZ",
+    "IgCvEUuh/3azuhy7uTZfGD4GTH1Zv8FglQX9Z9D+o7IejpcqHT5x4bJZ4bI77lwbI5ciLuhOPjR",
+    "KPjYKHUUvij+tGzaVf2SrxsOPLGGC65V6O+HqnUr0dvrR6+6h2N/xIfnuB/g9K/niQf/c5o7a7h",
+    "7NyJznrn6r9kS/udZH3puv5Mvm57EPuV8RtVcSR/xl3V36++6vX/f3b6jEpvb+zxDxuq6M+++xl",
+    "4/U78dv3vl+MP598263HjEdzvi4Vjw+B9uY9fUPi+29P+433+U1rv+IHtW939wTlQ8VGn8bGt9v",
+    "S/pYzeSSBqvnf7F7FejKvX3Ldl5x2g48e32Fd+hdwJjL6",
     ""
   };
 
-  static char newstr [1633] = "";
+  static char newstr [1621] = "";
   newstr[0] = '\0';
   for (i = 0; i < 23; i++) {
     strcat(newstr, encStrCodegen[i]);
@@ -2285,10 +2285,10 @@ static void mdlSetWorkWidths_c3_autolibshared(SimStruct *S)
 {
   const char* newstr = sf_c3_autolibshared_get_post_codegen_info();
   sf_set_work_widths(S, newstr);
-  ssSetChecksum0(S,(93838230U));
-  ssSetChecksum1(S,(1600419129U));
-  ssSetChecksum2(S,(1918710534U));
-  ssSetChecksum3(S,(1378214703U));
+  ssSetChecksum0(S,(1318517383U));
+  ssSetChecksum1(S,(2220140322U));
+  ssSetChecksum2(S,(139521075U));
+  ssSetChecksum3(S,(503681949U));
 }
 
 static void mdlRTW_c3_autolibshared(SimStruct *S)

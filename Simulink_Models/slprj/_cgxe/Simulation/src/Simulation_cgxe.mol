@@ -1,26 +1,3 @@
-Simulation_cgxe.obj
-m_CrGs8JrTwusBUauFKyg1SG.obj
-m_CIr2DVd0pXr9666zWzZpJG.obj
-m_kFZPgNUEyAHSTGzHcsG1fB.obj
-Simulation_cgxe_registry.obj
--LC:\PROGRA~1\MATLAB\R2023b\extern\lib\win64\mingw64
--llibmwblas
--llibmwlapack
-
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libmwpolyfun.lib"
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libmx.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libmex.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libmat.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libfixedpoint.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libut.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libmwmathutil.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libemlrt.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libmwcgxert.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libmwcgxeooprt.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libmwslexec_simbridge.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libmwslccrt.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libmwstringutil.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libcovrt.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libmwsl_sfcn_cov_bridge.lib" 
-"C:\Program Files\MATLAB\R2023b\extern\lib\win64\mingw64\libmwdsp_halidesim.lib"
-
+-L/Applications/MATLAB_R2023b.app/bin/maca64
+-lmwblas
+-lmwlapack
