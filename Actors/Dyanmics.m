@@ -13,8 +13,7 @@ classdef Dyanmics
     end
 
     methods
-        function obj = Dyanmics()
-            
+        function obj = Dyanmics(obj, scen)
         end
 
     end

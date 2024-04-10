@@ -30,15 +30,15 @@ classdef Sensors
             % Camera_EgoCar0_Back.Direction=180; % deg
             % Camera_EgoCar0_Back.Range_Max=150; % meters
             % 
-            % Left camera with 120deg FOV and 150m range, 1080p
-            Camera_EgoCar0_Left=Camera_Params(1920, 1080, 120);
-            Camera_EgoCar0_Left.Direction=120; % deg
-            Camera_EgoCar0_Left.Range_Max=150; % meters
-
-            % Right camera with 120deg FOV and 150m range, 1080p
-            Camera_EgoCar0_Right=Camera_Params(1920, 1080, 120);
-            Camera_EgoCar0_Right.Direction=-120; % deg
-            Camera_EgoCar0_Right.Range_Max=150; % meters
+            % % Left camera with 120deg FOV and 150m range, 1080p
+            % Camera_EgoCar0_Left=Camera_Params(1920, 1080, 120);
+            % Camera_EgoCar0_Left.Direction=120; % deg
+            % Camera_EgoCar0_Left.Range_Max=150; % meters
+            % 
+            % % Right camera with 120deg FOV and 150m range, 1080p
+            % Camera_EgoCar0_Right=Camera_Params(1920, 1080, 120);
+            % Camera_EgoCar0_Right.Direction=-120; % deg
+            % Camera_EgoCar0_Right.Range_Max=150; % meters
             % 
             % % Front telescope camera with 30deg FOV and 300m range, 1080p
             % Camera_EgoCar0_TeleFront=Camera_Params(1920, 1080, 30);
@@ -61,8 +61,7 @@ classdef Sensors
             % Lidar_EgoCar0_Center.Range_Max=120;
             
             obj.INS=INS_EgoCar0;
-            obj.cameras=[Camera_EgoCar0_Front  ...
-                Camera_EgoCar0_Left Camera_EgoCar0_Right];
+            obj.cameras=Camera_EgoCar0_Front;
             % obj.cameras=[Camera_EgoCar0_Front Camera_EgoCar0_Back ...
             %     Camera_EgoCar0_Left Camera_EgoCar0_Right ...
             %     Camera_EgoCar0_TeleFront Camera_EgoCar0_TeleBack];

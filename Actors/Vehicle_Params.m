@@ -24,7 +24,7 @@ classdef Vehicle_Params
             obj.Limits = Limits();
         end
 
-        function obj = Set_iniStateFromScenario(obj, Scenario)
+        function obj = Set_iniStateFromScenario(obj,Scenario)
             obj.State=obj.State.ReadScenario(Scenario, obj.ID);
         end
     end
