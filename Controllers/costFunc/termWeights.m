@@ -1,12 +1,12 @@
 classdef termWeights
     
     properties
-        input=eye(2);
-        progress=ones(2,1);
-        laneKeeping=ones(2,1);
-        obsAvoid=ones(2,1);
-        RL=ones(2,1);
-        softConstraintPenalty=[1e3 0]';
+        input=[1 1];
+        progress=1;
+        laneKeeping=1;
+        obsAvoid=1;
+        RL=1;
+        softConstraintPenalty=1e3;
 
         weights
     end

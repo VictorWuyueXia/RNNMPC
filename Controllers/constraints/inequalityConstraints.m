@@ -70,7 +70,8 @@ function constraints = inequalityConstraints(X, U, e, data, ...
 
     inpuRateCon=-1;
     %% Lane Keeping
-    LaneKeepingCon=laneKeepingCon(X, e, NumLanes, laneVector);
+    % LaneKeepingCon=laneKeepingCon(X, e, NumLanes, laneVector);
+    LaneKeepingCon=-1;
 
     %% Obstacle Avoidance
     obsAvoidCon=-1;

@@ -8,19 +8,18 @@ function cost = progressTerm(X, target, weight)
     % relative position to the target waypoint
     dPosition=position - target;
     
-    % relative distance away with the waypoint
+    % relative distance away with the waypoint 
     distance=vecnorm(dPosition')';
     
-    % normalize all the distances to 0-1
-    distance_normalized=distance./distance(1);
-    distance_normalized(isnan(distance_normalized))=0;
-    
-    % Each step's progress, as how much it contributes to
-    % the overall distance left, from 0-1
-    progress=diff(distance_normalized);
+    distance0=distance(1);
+    distance1=distance(end);
 
-    % quadratic cost
-    progress_left=1-sum(progress);
-    cost = progress_left' * weight * progress_left;
+    progress=distance1/distance0;
+
+    if isnan(progress)
+        progress=0;
+    end
+    
+    cost = progress' * weight * progress;
 end
 

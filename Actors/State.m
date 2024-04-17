@@ -17,22 +17,12 @@ classdef State
 
         function obj = ReadScenario(obj, Scenario, ID)
             % Extract initial state from scenario
-
-            for i=1:length(Scenario.EgoCarId)
-                % find this car from scenario
-                if ID == Scenario.EgoCarId(i)
-
-                    % Extract initial state from scenario
-                    obj.Position=Scenario.ActorSpecifications(i).Position;
-                    
-                    Roll=Scenario.ActorSpecifications(i).Roll;
-                    Pitch=Scenario.ActorSpecifications(i).Pitch;
-                    Yaw=Scenario.ActorSpecifications(i).Yaw;
-                    obj.Orientation=deg2rad([Roll Pitch Yaw]);
-                    
-                    break
-                end
-            end
+            obj.Position=Scenario.ActorSpecifications(ID).Position;
+            
+            Roll=Scenario.ActorSpecifications(ID).Roll;
+            Pitch=Scenario.ActorSpecifications(ID).Pitch;
+            Yaw=Scenario.ActorSpecifications(ID).Yaw;
+            obj.Orientation=[Roll Pitch Yaw];
         end
 
     end

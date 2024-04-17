@@ -1,4 +1,4 @@
-function cost = inputTerm(X,U,weight)
+function cost = inputTerm(X,U,weightInput)
     
     acc=U(:,1);
     steer=U(:,2);
@@ -6,8 +6,11 @@ function cost = inputTerm(X,U,weight)
     v=X(:,4);
     vs=steer.*v;
 
-    weight_acc=weight(1,1).*eye(size(acc,1));
-    weight_steer=weight(2,2).*eye(size(steer,1));
+    weightAcc=weightInput(1);
+    weightSteer=weightInput(2);
+
+    weight_acc=weightAcc.*eye(size(acc,1));
+    weight_steer=weightSteer.*eye(size(steer,1));
 
     % quadratic cost for inputs
     cost= acc'*weight_acc*acc + ...
