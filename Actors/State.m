@@ -22,6 +22,7 @@ classdef State
             Roll=Scenario.ActorSpecifications(ID).Roll;
             Pitch=Scenario.ActorSpecifications(ID).Pitch;
             Yaw=Scenario.ActorSpecifications(ID).Yaw;
+            Yaw=deg2rad(Yaw);
             obj.Orientation=[Roll Pitch Yaw];
         end
 

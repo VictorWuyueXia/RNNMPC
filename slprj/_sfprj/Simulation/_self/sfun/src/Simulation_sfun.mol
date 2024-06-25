@@ -1,4 +1,5 @@
 Simulation_sfun.o
+c4_Simulation.o
 Simulation_sfun_registry.o
 half_type.o
 
