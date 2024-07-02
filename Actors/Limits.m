@@ -3,7 +3,7 @@ classdef Limits
     properties
         % limits
         speedMAX = 10; % m/s
-        reverseMax = 0; % m/s
+        reverseMAX = 0; % m/s
         accMAX = 8; % m/s^2
         jerkMAX = 16;
         brakeMAX = 16; % m/s^2

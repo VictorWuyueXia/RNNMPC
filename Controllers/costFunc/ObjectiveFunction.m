@@ -1,16 +1,16 @@
 function cost = ObjectiveFunction(X, U ,e, data, ...
     Ts, L, waypoints, weights, limits, ...
-    NumLanes, laneVector)
+    NumLanes, laneVector, Plant)
 
     % Unpack
     % weights is fed in as an 2xN array of 
     % [input(1x2) progress(1x1) laneKeeping(1x2) obsAvoid(1x1) RL(1x1) softConstraintPenalty(1x1)]
-    weightInput = weights(1:2);
-    weightProgress = weights(3);
-    weightLaneKeeping = weights(4:5);
-    % weightObsAvoid = weights(6);
-    weightRL = weights(7);
-    weightSoftConstraintPenalty = weights(8);
+    weightInput = weights.input;
+    weightProgress = weights.progress;
+    weightLaneKeeping = weights.laneKeeping;
+    % weightObsAvoid = weights.obsAvoid;
+    weightRL = weights.RL;
+    weightSoftConstraintPenalty = weights.softConstraintPenalty;
     
     cost_progress=progressTerm(X, waypoints, weightProgress);
     cost_inputs=inputTerm(X, U, weightInput);

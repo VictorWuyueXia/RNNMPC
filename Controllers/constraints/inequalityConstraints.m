@@ -1,6 +1,6 @@
 function constraints = inequalityConstraints(X, U, e, data, ...
     Ts, L, waypoints, weights, limits, ...
-    NumLanes, laneVector)
+    NumLanes, laneVector, Plant)
     %% Make inequality constraints
     % [ieqCon1
     %  ieqCon2-e] <=0
@@ -10,13 +10,13 @@ function constraints = inequalityConstraints(X, U, e, data, ...
     % lastMV=data.LastMV;
     
     % [speedMAX accMAX jerkMAX brakeMAX turnAngleMAX turnAngleRateMAX]
-    speedMax=limits(1);
-    reverseMax=limits(2);
-    accMax=limits(3);
-    jerkMax=limits(4);
-    brakeMax=limits(5);
-    steerMax=limits(6);
-    steerRateMax=limits(7);
+    speedMax=limits.speedMAX;
+    reverseMax=limits.reverseMAX;
+    accMax=limits.accMAX;
+    jerkMax=limits.jerkMAX;
+    brakeMax=limits.brakeMAX;
+    steerMax=limits.turnAngleMAX;
+    steerRateMax=limits.turnAngleRateMAX;
 
     % Xs are PredictionHorizon rows and 4 columns
     % The first row is the current X, which cannot be changed
